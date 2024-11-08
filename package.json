@@ -21,7 +21,7 @@
     "url": "https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control.git"
   },
   "engines": {
-    "node": ">= 20"
+    "node": ">= 18"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.2"
