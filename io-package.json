@@ -67,25 +67,7 @@
 		"dataSource": "poll",
 		"adminUI": {
 			"config": "materialize",
-			"tab": "materialize"
-		},
-		"adminTab": {
-			"singleton": true,
-			"name": {
-				"en": "PV-Surplus-Charging-Control",
-				"de": "PV-Überschuss-Ladesteuerung",
-				"ru": "PV-Избыток-Зарядка-Контроль",
-				"pt": "Controle de carga excedente fotovoltaica",
-				"nl": "PV-overschot-laadcontrole",
-				"fr": "Contrôle de charge excédentaire PV",
-				"it": "Controllo della carica in eccesso del fotovoltaico",
-				"es": "Control de carga excedente fotovoltaica",
-				"pl": "Kontrola ładowania nadwyżki fotowoltaicznej",
-				"uk": "PV-Surplus-Charging-Control",
-				"zh-cn": "PV 剩余充电控制"
-			},
-			"link": "",
-			"fa-icon": "info"
+			"tab": false
 		},
 		"supportCustoms": true,
 		"eraseOnUpload": true,
