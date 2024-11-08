@@ -1,0 +1,109 @@
+{
+	"common": {
+		"name": "pv-surplus-charging-control",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "PV-Surplus-Charging-Control",
+			"de": "PV-Überschuss-Ladesteuerung",
+			"ru": "PV-Избыток-Зарядка-Контроль",
+			"pt": "Controle de carga excedente fotovoltaica",
+			"nl": "PV-overschot-laadcontrole",
+			"fr": "Contrôle de charge excédentaire PV",
+			"it": "Controllo della carica in eccesso del fotovoltaico",
+			"es": "Control de carga excedente fotovoltaica",
+			"pl": "Kontrola ładowania nadwyżki fotowoltaicznej",
+			"uk": "PV-Surplus-Charging-Control",
+			"zh-cn": "PV 剩余充电控制"
+		},
+		"desc": {
+			"en": "This adapter allows you in a simple way, to use the PV surplus energy to charge your vehicle!",
+			"de": "Mit diesem Adapter können Sie auf einfache Weise die überschüssige PV-Energie zum Laden Ihres Fahrzeugs nutzen!",
+			"ru": "Этот адаптер позволяет вам легко использовать избыточную фотоэлектрическую энергию для зарядки вашего автомобиля!",
+			"pt": "Este adaptador permite-lhe, de uma forma simples, utilizar a energia fotovoltaica excedentária para carregar o seu veículo!",
+			"nl": "Met deze adapter kunt u op een eenvoudige manier de overtollige PV-energie gebruiken om uw voertuig op te laden!",
+			"fr": "Cet adaptateur vous permet de manière simple, d'utiliser le surplus d'énergie PV pour recharger votre véhicule !",
+			"it": "Questo adattatore ti permette in modo semplice di utilizzare l'energia in eccesso del fotovoltaico per ricaricare il tuo veicolo!",
+			"es": "¡Este adaptador le permite, de forma sencilla, utilizar el excedente de energía fotovoltaica para cargar su vehículo!",
+			"pl": "Adapter ten pozwala w prosty sposób wykorzystać nadwyżkę energii fotowoltaicznej do ładowania pojazdu!",
+			"uk": "Цей адаптер дозволяє простим способом використовувати надлишок фотоелектричної енергії для зарядки вашого автомобіля!",
+			"zh-cn": "该适配器可以让您以简单的方式，使用光伏剩余能量为您的车辆充电！"
+		},
+		"authors": [
+			"SKB <info@skb-web.de>"
+		],
+		"keywords": [
+			"pv power wallbox vehicle"
+		],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "pv-surplus-charging-control.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.pv-surplus-charging-control/main/admin/pv-surplus-charging-control.png",
+		"readme": "https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "logic",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "poll",
+		"adminUI": {
+			"config": "materialize",
+			"tab": "materialize"
+		},
+		"adminTab": {
+			"singleton": true,
+			"name": {
+				"en": "PV-Surplus-Charging-Control",
+				"de": "PV-Überschuss-Ladesteuerung",
+				"ru": "PV-Избыток-Зарядка-Контроль",
+				"pt": "Controle de carga excedente fotovoltaica",
+				"nl": "PV-overschot-laadcontrole",
+				"fr": "Contrôle de charge excédentaire PV",
+				"it": "Controllo della carica in eccesso del fotovoltaico",
+				"es": "Control de carga excedente fotovoltaica",
+				"pl": "Kontrola ładowania nadwyżki fotowoltaicznej",
+				"uk": "PV-Surplus-Charging-Control",
+				"zh-cn": "PV 剩余充电控制"
+			},
+			"link": "",
+			"fa-icon": "info"
+		},
+		"supportCustoms": true,
+		"eraseOnUpload": true,
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": "7.0.23"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": []
+}
