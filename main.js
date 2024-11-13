@@ -8,7 +8,7 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 
-class PvSurplusChargingControl extends utils.Adapter {
+class chargecontrol extends utils.Adapter {
 
 	/**
 	 * @param {Partial<utils.AdapterOptions>} [options={}]
@@ -16,7 +16,7 @@ class PvSurplusChargingControl extends utils.Adapter {
 	constructor(options) {
 		super({
 			...options,
-			name: 'pv-surplus-charging-control',
+			name: 'chargecontrol',
 		});
 
 		/* Configurable Variables */
@@ -531,8 +531,8 @@ if (require.main !== module) {
 	/**
 	 * @param {Partial<utils.AdapterOptions>} [options={}]
 	 */
-	module.exports = (options) => new PvSurplusChargingControl(options);
+	module.exports = (options) => new chargecontrol(options);
 } else {
 	// otherwise start the instance directly
-	new PvSurplusChargingControl();
+	new chargecontrol();
 }

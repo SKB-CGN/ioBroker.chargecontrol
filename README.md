@@ -1,16 +1,16 @@
-![Logo](admin/pv-surplus-charging-control.png)
-# ioBroker.pv-surplus-charging-control
+![Logo](admin/chargecontrol.png)
+# ioBroker.chargecontrol
 
-[![NPM version](https://img.shields.io/npm/v/iobroker.pv-surplus-charging-control.svg)](https://www.npmjs.com/package/iobroker.pv-surplus-charging-control)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.pv-surplus-charging-control.svg)](https://www.npmjs.com/package/iobroker.pv-surplus-charging-control)
-![Number of Installations](https://iobroker.live/badges/pv-surplus-charging-control-installed.svg)
-![Current version in stable repository](https://iobroker.live/badges/pv-surplus-charging-control-stable.svg)
+[![NPM version](https://img.shields.io/npm/v/iobroker.chargecontrol.svg)](https://www.npmjs.com/package/iobroker.chargecontrol)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.chargecontrol.svg)](https://www.npmjs.com/package/iobroker.chargecontrol)
+![Number of Installations](https://iobroker.live/badges/chargecontrol-installed.svg)
+![Current version in stable repository](https://iobroker.live/badges/chargecontrol-stable.svg)
 
-[![NPM](https://nodei.co/npm/iobroker.pv-surplus-charging-control.png?downloads=true)](https://nodei.co/npm/iobroker.pv-surplus-charging-control/)
+[![NPM](https://nodei.co/npm/iobroker.chargecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.chargecontrol/)
 
-**Tests:** ![Test and Release](https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control/workflows/Test%20and%20Release/badge.svg)
+**Tests:** ![Test and Release](https://github.com/SKB-CGN/ioBroker.chargecontrol/workflows/Test%20and%20Release/badge.svg)
 
-## pv-surplus-charging-control adapter for ioBroker
+## chargecontrol adapter for ioBroker
 
 This adapter allows you in a simple way, to use the PV surplus energy to charge your vehicle!
 
@@ -25,13 +25,13 @@ You can check other adapters for examples or ask in the developer community. Usi
 ### Getting started
 
 You are almost done, only a few steps left:
-1. Create a new repository on GitHub with the name `ioBroker.pv-surplus-charging-control`
+1. Create a new repository on GitHub with the name `ioBroker.chargecontrol`
 
 1. Push all files to the GitHub repo. The creator has already set up the local repository for you:  
 	```bash
 	git push origin main
 	```
-1. Add a new secret under https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control/settings/secrets. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under https://github.com/settings/tokens.
+1. Add a new secret under https://github.com/SKB-CGN/ioBroker.chargecontrol/settings/secrets. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under https://github.com/settings/tokens.
 
 1. Head over to [main.js](main.js) and start programming!
 
@@ -99,8 +99,8 @@ In order to install the adapter locally without publishing, the following steps 
 	```
 
 For later updates, the above procedure is not necessary. Just do the following:
-1. Overwrite the changed files in the adapter directory (`/opt/iobroker/node_modules/iobroker.pv-surplus-charging-control`)
-1. Execute `iobroker upload pv-surplus-charging-control` on the ioBroker host
+1. Overwrite the changed files in the adapter directory (`/opt/iobroker/node_modules/iobroker.chargecontrol`)
+1. Execute `iobroker upload chargecontrol` on the ioBroker host
 
 ## Changelog
 <!--
