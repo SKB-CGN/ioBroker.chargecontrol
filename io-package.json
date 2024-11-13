@@ -26,7 +26,7 @@
 		"platform": "Javascript/Node.js",
 		"icon": "chargecontrol.png",
 		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.png",
+		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.jpg",
 		"readme": "https://github.com/SKB-CGN/ioBroker.chargecontrol/blob/main/README.md",
 		"loglevel": "info",
 		"tier": 3,
@@ -36,7 +36,7 @@
 		"connectionType": "local",
 		"dataSource": "poll",
 		"adminUI": {
-			"config": "materialize",
+			"config": "json",
 			"tab": false
 		},
 		"supportCustoms": true,
@@ -62,9 +62,6 @@
 		"wallbox_connected": "",
 		"wallbox_ampere_max": 32,
 		"wallbox_ampere_min": 6,
-		"car_soc": "",
-		"car_update": "",
-		"car_capacity": 10,
 		"timeout_start": 600,
 		"timeout_stop": 600,
 		"timeout_protection": 300,
@@ -74,16 +71,18 @@
 	"objects": [],
 	"instanceObjects": [
 		{
-			"_id": "control.forceStart",
-			"type": "state",
+			"_id": "control",
+			"type": "channel",
 			"common": {
-				"name": "Force start charging",
-				"desc": "Starts the charging process without paying attention to surplus",
-				"type": "boolean",
-				"role": "indicator",
-				"read": true,
-				"write": true,
-				"def": false
+				"name": "Control Settings of ChargeControl"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Info of charging"
 			},
 			"native": {}
 		},
@@ -92,7 +91,7 @@
 			"type": "state",
 			"common": {
 				"name": "Mode",
-				"desc": "Mode for start/stop/update",
+				"desc": "Mode for controlling the start of charge",
 				"type": "number",
 				"role": "indicator",
 				"read": true,
@@ -100,10 +99,9 @@
 				"def": 0,
 				"states": {
 					"0": "Deactivated",
-					"1": "Surplus (with ChargeLimit)",
-					"2": "Surplus (ignore ChargeLimit)",
-					"3": "Normal (with ChargeLimit)",
-					"4": "Normal (ignore ChargeLimit)"
+					"1": "Only Surplus",
+					"2": "Minimal + Surplus",
+					"3": "Fast"
 				}
 			},
 			"native": {}
@@ -130,11 +128,105 @@
 				"name": "Charge Power",
 				"desc": "Charge Power to use for the Wallbox",
 				"type": "number",
-				"role": "value.ampere",
+				"role": "value.current",
 				"read": true,
 				"write": true,
 				"def": 6,
 				"unit": "A"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Info about charging details"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.chargeRemainingDuration",
+			"type": "state",
+			"common": {
+				"name": "Remaining Duration",
+				"desc": "Remaining Minutes of current charge process",
+				"type": "number",
+				"role": "level.timer.sleep",
+				"read": true,
+				"write": false,
+				"def": 0,
+				"unit": "Minutes"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.vehicleName",
+			"type": "state",
+			"common": {
+				"name": "Name of Vehicle",
+				"desc": "Name of the Vehicle currently charging, or empty if no vehicle is connected.",
+				"type": "string",
+				"role": "text",
+				"read": true,
+				"write": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.charging",
+			"type": "state",
+			"common": {
+				"name": "Indicate charging",
+				"desc": "Indicates if charging is active",
+				"type": "boolean",
+				"role": "indicator.working",
+				"def": false,
+				"read": true,
+				"write": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.chargingCompleted",
+			"type": "state",
+			"common": {
+				"name": "Indicate charging completed",
+				"desc": "Indicates if charging is completed or",
+				"type": "boolean",
+				"role": "indicator",
+				"def": false,
+				"read": true,
+				"write": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.chargeRemainingPercent",
+			"type": "state",
+			"common": {
+				"name": "Remaining percent of energy",
+				"desc": "Remaining percent of energy to charge into the car",
+				"type": "number",
+				"role": "value.battery",
+				"read": true,
+				"write": false,
+				"def": 0,
+				"unit": "%"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.chargeRemainingPower",
+			"type": "state",
+			"common": {
+				"name": "Remaining power to charge",
+				"desc": "Remaining power to charge into the car",
+				"type": "number",
+				"role": "value.energy.activ",
+				"read": true,
+				"write": false,
+				"def": 0,
+				"unit": "Wh"
 			},
 			"native": {}
 		}

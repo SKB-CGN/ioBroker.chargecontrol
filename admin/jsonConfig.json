@@ -1,0 +1,305 @@
+{
+   "type": "tabs",
+   "tabsStyle": {
+      "width": "calc(100% - 100px)"
+   },
+   "i18n": true,
+   "items": {
+      "_StandardTab": {
+         "type": "panel",
+         "label": "main_settings",
+         "items": {
+            "introMain": {
+               "type": "staticText",
+               "text": "subtitle_main",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true
+            },
+            "surplus_id": {
+               "type": "objectId",
+               "label": "surplus_id",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "surplus_option": {
+               "type": "checkbox",
+               "label": "surplus_option",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true,
+               "default": false
+            },
+            "surplus_positive": {
+               "type": "checkbox",
+               "label": "surplus_positive",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true,
+               "default": false
+            },
+            "_divider0": {
+               "newLine": true,
+               "type": "divider",
+               "color": "primary"
+            },
+            "_donate": {
+               "type": "staticImage",
+               "tooltip": "PayPal.Me",
+               "noTranslation": true,
+               "href": "https://www.paypal.com/donate/?hosted_button_id=XNR6XFB9UZ8UJ",
+               "src": "paypal-donate-button.png",
+               "xs": 6,
+               "sm": 6,
+               "md": 4,
+               "lg": 2,
+               "xl": 1,
+               "newLine": true
+            },
+            "_donateTx": {
+               "type": "staticText",
+               "text": "donate",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12
+            }
+         }
+      },
+      "_WallboxTab": {
+         "type": "panel",
+         "label": "title_wallbox",
+         "items": {
+            "introWallbox": {
+               "type": "staticText",
+               "text": "subtitle_wallbox",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true
+            },
+            "wallbox_connected": {
+               "type": "objectId",
+               "label": "wallbox_connected",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "wallbox_start": {
+               "type": "objectId",
+               "label": "wallbox_start",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "wallbox_stop": {
+               "type": "objectId",
+               "label": "wallbox_stop",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "wallbox_power": {
+               "type": "objectId",
+               "label": "wallbox_power",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "wallbox_ampere_min": {
+               "type": "number",
+               "label": "wallbox_ampere_min",
+               "min": 4,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "wallbox_ampere_max": {
+               "type": "number",
+               "label": "wallbox_ampere_max",
+               "min": 4,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            }
+         }
+      },
+      "_CarTab": {
+         "type": "panel",
+         "label": "title_car",
+         "items": {
+            "introCar": {
+               "type": "staticText",
+               "text": "subtitle_car",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true
+            },
+            "carList": {
+               "type": "table",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "label": "car_list",
+               "items": [
+                  {
+                     "type": "text",
+                     "title": "car_name",
+                     "attr": "name",
+                     "width": "15%",
+                     "default": "New Car"
+                  },
+                  {
+                     "type": "number",
+                     "title": "car_capacity",
+                     "attr": "capacity",
+                     "width": "15%",
+                     "default": ""
+                  },
+                  {
+                     "type": "objectId",
+                     "title": "car_soc",
+                     "attr": "soc",
+                     "width": "15%",
+                     "default": ""
+                  },
+                  {
+                     "type": "objectId",
+                     "title": "car_connected",
+                     "attr": "connected",
+                     "width": "15%",
+                     "default": ""
+                  },
+                  {
+                     "type": "objectId",
+                     "title": "car_update",
+                     "attr": "update",
+                     "width": "15%",
+                     "default": ""
+                  },
+                  {
+                     "type": "checkbox",
+                     "title": "car_placeholder",
+                     "attr": "placeholder",
+                     "width": "20%",
+                     "default": false
+                  }
+               ]
+            }
+         }
+      },
+      "_TimeTab": {
+         "type": "panel",
+         "label": "title_time",
+         "items": {
+            "introTime": {
+               "type": "staticText",
+               "text": "subtitle_time",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12,
+               "newLine": true
+            },
+            "timeout_start": {
+               "type": "number",
+               "label": "timeout_start",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "timeout_stop": {
+               "type": "number",
+               "label": "timeout_stop",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "timeout_power": {
+               "type": "number",
+               "label": "timeout_power",
+               "min": 60,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "timeout_protection": {
+               "type": "number",
+               "label": "timeout_protection",
+               "min": 300,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "timeout_car": {
+               "type": "number",
+               "label": "timeout_car",
+               "min": 60,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            }
+         }
+      }
+   }
+}
