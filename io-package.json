@@ -26,7 +26,7 @@
 		"platform": "Javascript/Node.js",
 		"icon": "chargecontrol.png",
 		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.jpg",
+		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.png",
 		"readme": "https://github.com/SKB-CGN/ioBroker.chargecontrol/blob/main/README.md",
 		"loglevel": "info",
 		"tier": 3,
