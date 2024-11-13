@@ -3,18 +3,22 @@
 <head>
 
 	<!-- Load ioBroker scripts and styles-->
+	<link type="text/css" rel="stylesheet" href="../../lib/css/fancytree/ui.fancytree.min.css" />
 	<link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
 	<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
 	<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-	<script type="text/javascript" src="../../js/translate.js"></script>
 	<script type="text/javascript" src="../../lib/js/materialize.js"></script>
+	<script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
+
+	<script type="text/javascript" src="../../js/translate.js"></script>
+	<script type="text/javascript" src="../../lib/js/selectID.js"></script>
 	<script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
 	<!-- Load our own files -->
-	<link rel="stylesheet" type="text/css" href="style.css" />
 	<script type="text/javascript" src="words.js"></script>
 
 	<script type="text/javascript">
@@ -41,6 +45,19 @@
 			onChange(false);
 			// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
 			if (M) M.updateTextFields();
+
+			$('.datasource').click(function () {
+				let id = $(this).closest(".row").find(".dp").attr("id");
+				initSelectId(function (sid) {
+					sid.selectId('show', $('#' + id).val(), function (newId) {
+						if (newId != $('#' + id).val()) {
+							$('#' + id).val(newId);
+							$('#' + id).focus();
+							onChange();
+						}
+					});
+				});
+			});
 		}
 
 		// This will be called by the admin adapter when the user presses the save button
@@ -59,37 +76,287 @@
 			});
 			callback(obj);
 		}
-	</script>
 
+		var selectId;
+		function initSelectId(callback) {
+			if (selectId) {
+				return callback(selectId);
+			}
+			socket.emit('getObjects', function (err, objs) {
+				selectId = $('#dialog-select-member').selectId('init', {
+					noMultiselect: true,
+					objects: objs,
+					imgPath: '../../lib/css/fancytree/',
+					filter: {
+						type: 'state'
+					},
+					name: 'scenes-select-state',
+					texts: {
+						select: _('Select'),
+						cancel: _('Cancel'),
+						all: _('All'),
+						id: _('ID'),
+						name: _('Name'),
+						role: _('Role'),
+						room: _('Room'),
+						value: _('Value'),
+						selectid: _('Select ID'),
+						from: _('From'),
+						lc: _('Last changed'),
+						ts: _('Time stamp'),
+						wait: _('Processing...'),
+						ack: _('Acknowledged'),
+						selectAll: _('Select all'),
+						unselectAll: _('Deselect all'),
+						invertSelection: _('Invert selection')
+					},
+					columns: ['image', 'name', 'role', 'room']
+				});
+				callback(selectId);
+			});
+		}
+	</script>
+	<style>
+		.adapter-body {
+			overflow: hidden !important;
+		}
+
+		@media screen and (max-width: 768px) {
+			.adapter-body {
+				overflow: auto;
+			}
+
+			/* Overwrite the s12 class from materialize.css */
+			.m .row .col.s12.for-icon {
+				width: 83.33333%;
+			}
+
+			/* Overwrite the s12 class from materialize.css */
+			.m .row .col.s12.icon {
+				width: 8.33333%;
+			}
+		}
+
+		@media (max-width: 601px) {
+			.m .dropdown-menu {
+				position: fixed;
+			}
+		}
+	</style>
 </head>
 
 <body>
 
 	<div class="m adapter-container">
-
-		<div class="row">
-			<div class="col s12 m4 l2">
-				<img src="pv-surplus-charging-control.png" class="logo">
+		<div class="row" style="height: 100%;">
+			<div class="col s12">
+				<ul class="tabs">
+					<li class="tab col s3"><a href="#tab-main" class="translate">Main settings</a></li>
+					<li class="tab col s3"><a href="#tab-color" class="translate" data-lang="color-settings">Color
+							settings</a></li>
+					<li class="tab col s3"><a href="#tab-fonts" class="translate" data-lang="font-and-line">font and
+							line</a></li>
+				</ul>
+			</div>
+			<div id="tab-main" class="col s12 page">
+				<div class="row">
+					<div class="col s12 m4 l2">
+						<img src="pv-surplus-charging-control.png" class="logo">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<h6 class="title translate" data-lang="title_grid">Grid feed-in</h6>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="surplus_id" type="text" />
+						<label for="surplus_id" class="translate" data-lang="surplus_id">Grid feed-in:</label>
+						<span class="translate" data-lang="ex_surplus_id">Data point of your grid feed-in</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 m12 l4">
+						<input id="surplus_option" class="value" type="checkbox" />
+						<label for="surplus_option" class="translate" data-lang="surplus_option">The source is kW (Default:
+							watts)</label>
+					</div>
+					<div class="input-field col s12 m8">
+						<input id="surplus_positive" class="value" type="checkbox" />
+						<label for="surplus_positive" class="translate" data-lang="surplus_positive">Grid feed-in is
+							positive</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<h6 class="title translate" data-lang="title_wallbox">Wallbox</h6>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="wallbox_connected" type="text" />
+						<label for="wallbox_connected" class="translate" data-lang="wallbox_connected">Wallbox start:</label>
+						<span class="translate" data-lang="ex_wallbox_connected">Data point for starting the wallbox</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="wallbox_start" type="text" />
+						<label for="wallbox_start" class="translate" data-lang="wallbox_start">Wallbox start:</label>
+						<span class="translate" data-lang="ex_wallbox_start">Data point for starting the wallbox</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="wallbox_stop" type="text" />
+						<label for="wallbox_stop" class="translate" data-lang="wallbox_stop">Wallbox stop:</label>
+						<span class="translate" data-lang="ex_wallbox_stop">Data point for stopping the wallbox</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="wallbox_power" type="text" />
+						<label for="wallbox_power" class="translate" data-lang="wallbox_power">Wallbox Power:</label>
+						<span class="translate" data-lang="ex_wallbox_power">Data point for setting the power of the
+							wallbox</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="wallbox_ampere_min" type="number" min="1" />
+						<label for="wallbox_ampere_min" class="translate" data-lang="wallbox_ampere_min">Minimal
+							Ampere:</label>
+						<span class="translate" data-lang="ex_wallbox_ampere_min">Minimal Ampere of your Wallbox</span>
+					</div>
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="wallbox_ampere_max" type="number" min="1" />
+						<label for="wallbox_ampere_max" class="translate" data-lang="wallbox_ampere_max">Maximal
+							Ampere:</label>
+						<span class="translate" data-lang="ex_wallbox_ampere_max">Maximal Ampere of your Wallbox</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<h6 class="title translate" data-lang="title_car">Car</h6>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="car_soc" type="text" />
+						<label for="car_soc" class="translate" data-lang="car_soc">Vehicle state of charge:</label>
+						<span class="translate" data-lang="ex_car_soc">Data point for the vehicle state of charge</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field for-icon col s12 m10 l8">
+						<input class="value dp" id="car_update" type="text" />
+						<label for="car_update" class="translate" data-lang="car_update">Vehicle update trigger:</label>
+						<span class="translate" data-lang="ex_car_update">Data point for the vehicle update function</span>
+					</div>
+					<div class="input-field icon col m1 s1">
+						<a class="btn-floating waves-effect waves-light blue input-field datasource"><i
+								class="material-icons">search</i></a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="car_capacity" type="number" />
+						<label for="car_capacity" class="translate" data-lang="car_capacity">Vehicle battery capacity (in
+							kW/h)</label>
+						<span class="translate" data-lang="ex_car_capacity">Capacity of the battery inside the vehicle</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<h6 class="title translate" data-lang="title_time">Time settings</h6>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="timeout_start" type="number" />
+						<label for="timeout_start" class="translate" data-lang="timeout_start">Timeout for start charging (in
+							seconds):</label>
+						<span class="translate" data-lang="ex_timeout_start">Timeout for starting the charge process, if
+							surplus is detected</span>
+					</div>
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="timeout_stop" type="number" />
+						<label for="timeout_stop" class="translate" data-lang="timeout_stop">Timeout for stop charging (in
+							seconds):</label>
+						<span class="translate" data-lang="ex_timeout_stop">Timeout for stopping the charge process, if too
+							less surplus is detected</span>
+					</div>
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="timeout_power" type="number" min="60" />
+						<label for="timeout_power" class="translate" data-lang="timeout_power">Timeout for changing the power
+							of the wallbox (in seconds)</label>
+						<span class="translate" data-lang="ex_timeout_power">Timeout after which time new power can be set in
+							the wallbox</span>
+					</div>
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="timeout_protection" type="number" min="300" />
+						<label for="timeout_protection" class="translate" data-lang="timeout_protection">Timeout for stop
+							charging (in
+							seconds):</label>
+						<span class="translate" data-lang="ex_timeout_protection">Timeout for stopping the charge process, if
+							too
+							less surplus is detected</span>
+					</div>
+					<div class="input-field col s12 m10 l4">
+						<input class="value" id="timeout_car" type="number" min="120" />
+						<label for="timeout_car" class="translate" data-lang="timeout_car">Timeout for car updates (in
+							seconds):</label>
+						<span class="translate" data-lang="ex_timeout_car">Timeout for new updates from the car during
+							charging process</span>
+					</div>
+				</div>
 			</div>
 		</div>
-
-		<!-- Put your content here -->
-
-		<!-- For example columns with settings: -->
-		<div class="row">
-			<div class="col s6 input-field">
-				<input type="checkbox" class="value" id="option1" />
-				<label for="option1" class="translate">option1</label>
-			</div>
-
-			<div class="col s6 input-field">
-				<input type="text" class="value" id="option2" />
-				<label for="option2" class="translate">option2</label>
-			</div>
-		</div>
-
 	</div>
-
+	<div class="m material-dialogs">
+		<div id="dialog-select-member" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<div class="row">
+					<div class="col s12 title"></div>
+				</div>
+				<div class="row">
+					<div class="col s12 dialog-content">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a class="modal-action modal-close waves-effect waves-green btn btn-set"><i
+						class="large material-icons left">check</i><span class="translate">Select</span></a>
+				<a class="modal-action modal-close waves-effect waves-green btn btn-close"><i
+						class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

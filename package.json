@@ -1,7 +1,7 @@
 {
   "name": "iobroker.pv-surplus-charging-control",
   "version": "0.0.1",
-  "description": "This adapter allows you in a simple way, to use the PV surplus energy to charge your vehicle!",
+  "description": "This adapter allows you in a simple way, to control your Wallbox and the charged vehicle!",
   "author": {
     "name": "SKB",
     "email": "info@skb-web.de"
@@ -74,7 +74,7 @@
     "release": "release-script"
   },
   "bugs": {
-    "url": "https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control/issues"
+    "url": "https://github.com/SKB-CGN/ioBroker.chargecontrol/issues"
   },
   "readmeFilename": "README.md"
 }
