@@ -1,5 +1,5 @@
 {
-  "name": "iobroker.pv-surplus-charging-control",
+  "name": "iobroker.chargecontrol",
   "version": "0.0.1",
   "description": "This adapter allows you in a simple way, to control your Wallbox and the charged vehicle!",
   "author": {
@@ -11,14 +11,14 @@
       "name": "SKB-CGN"
     }
   ],
-  "homepage": "https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control",
+  "homepage": "https://github.com/SKB-CGN/ioBroker.chargecontrol",
   "license": "MIT",
   "keywords": [
     "pv power wallbox vehicle"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/SKB-CGN/ioBroker.pv-surplus-charging-control.git"
+    "url": "https://github.com/SKB-CGN/ioBroker.chargecontrol.git"
   },
   "engines": {
     "node": ">= 18"
