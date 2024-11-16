@@ -4,20 +4,55 @@
 		"version": "0.0.1",
 		"news": {
 			"0.0.1": {
-				"en": "initial release"
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "первоначальный выпуск",
+				"pt": "lançamento inicial",
+				"nl": "eerste release",
+				"fr": "version initiale",
+				"it": "rilascio iniziale",
+				"es": "lanzamiento inicial",
+				"pl": "pierwsze wydanie",
+				"uk": "початковий випуск",
+				"zh-cn": "初始版本"
 			}
 		},
 		"titleLang": {
-			"en": "ChargeControl"
+			"en": "Charge Control",
+			"de": "Ladekontrolle",
+			"ru": "Контроль заряда",
+			"pt": "Controle de carga",
+			"nl": "Laadcontrole",
+			"fr": "Contrôle des charges",
+			"it": "Controllo della carica",
+			"es": "Control de carga",
+			"pl": "Kontrola ładowania",
+			"uk": "Контроль заряду",
+			"zh-cn": "充电控制"
 		},
 		"desc": {
-			"en": "This adapter allows you in a simple way, to control your Wallbox and the charged vehicle!"
+			"en": "This adapter allows you in a simple way, to control your Wallbox and the vehicle to be charged! Even with surplus if configured!",
+			"de": "Mit diesem Adapter können Sie auf einfache Weise Ihre Wallbox und das zu ladende Fahrzeug steuern! Sogar mit Überschuss, wenn konfiguriert!",
+			"ru": "Этот адаптер позволяет вам легко управлять Wallbox и заряжаемым автомобилем! Даже с излишком, если настроено!",
+			"pt": "Este adaptador permite-lhe, de forma simples, controlar a sua Wallbox e o veículo a carregar! Mesmo com excedente se configurado!",
+			"nl": "Met deze adapter kunt u op een eenvoudige manier uw Wallbox en het op te laden voertuig bedienen! Zelfs met overschot indien geconfigureerd!",
+			"fr": "Cet adaptateur vous permet de manière simple, de contrôler votre Wallbox et le véhicule à recharger ! Même avec surplus si configuré !",
+			"it": "Questo adattatore ti permette in modo semplice di controllare la tua Wallbox e il veicolo da ricaricare! Anche con surplus se configurato!",
+			"es": "¡Este adaptador te permite controlar de forma sencilla tu Wallbox y el vehículo a cargar! ¡Incluso con excedente si está configurado!",
+			"pl": "Za pomocą tego adaptera możesz w prosty sposób sterować Wallboxem i ładowanym pojazdem! Nawet z nadwyżką, jeśli jest skonfigurowana!",
+			"uk": "За допомогою цього адаптера ви можете легко керувати пристроєм Wallbox і транспортним засобом, який потрібно зарядити! Навіть із надлишком, якщо налаштовано!",
+			"zh-cn": "该适配器可让您以简单的方式控制您的 Wallbox 和要充电的车辆！即使配置有剩余！"
 		},
 		"authors": [
 			"SKB <info@skb-web.de>"
 		],
 		"keywords": [
-			"pv power wallbox vehicle charge"
+			"pv",
+			"power",
+			"wallbox",
+			"vehicle",
+			"charge",
+			"control"
 		],
 		"licenseInformation": {
 			"type": "free",
@@ -34,12 +69,20 @@
 		"type": "logic",
 		"compact": true,
 		"connectionType": "local",
+		"messagebox": true,
 		"dataSource": "poll",
 		"adminUI": {
 			"config": "json",
-			"tab": false
+			"tab": "materialize"
 		},
-		"supportCustoms": true,
+		"adminTab": {
+			"singleton": false,
+			"name": {
+				"en": "ChargeControl"
+			},
+			"link": ""
+		},
+		"supportCustoms": false,
 		"eraseOnUpload": true,
 		"dependencies": [
 			{
@@ -66,7 +109,13 @@
 		"timeout_stop": 600,
 		"timeout_protection": 300,
 		"timeout_car": 120,
-		"timeout_power": 60
+		"timeout_power": 60,
+		"notificationEnable": false,
+		"notificationsType": "Telegram",
+		"telegramInstance": "telegram.0",
+		"emailInstance": "email.0",
+		"telegramRecipient": "",
+		"telegramSilentNotice": false
 	},
 	"objects": [],
 	"instanceObjects": [
@@ -75,14 +124,6 @@
 			"type": "channel",
 			"common": {
 				"name": "Control Settings of ChargeControl"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Info of charging"
 			},
 			"native": {}
 		},
@@ -117,22 +158,37 @@
 				"read": true,
 				"write": true,
 				"def": 100,
-				"unit": "%"
+				"unit": "%",
+				"min": 0,
+				"max": 100
 			},
 			"native": {}
 		},
 		{
-			"_id": "control.chargePower",
+			"_id": "control.chargeAmpere",
 			"type": "state",
 			"common": {
-				"name": "Charge Power",
-				"desc": "Charge Power to use for the Wallbox",
+				"name": "Charge Ampere",
+				"desc": "Charge Ampere to use for the Wallbox",
 				"type": "number",
 				"role": "value.current",
 				"read": true,
 				"write": true,
 				"def": 6,
 				"unit": "A"
+			},
+			"native": {}
+		},
+		{
+			"_id": "control.startGuestCharge",
+			"type": "state",
+			"common": {
+				"name": "Start charge session for a guest car/unknown car",
+				"desc": "This state is to allow to starte the session, if an unknown car is connected",
+				"type": "boolean",
+				"role": "button",
+				"read": true,
+				"write": true
 			},
 			"native": {}
 		},
@@ -169,6 +225,25 @@
 				"role": "text",
 				"read": true,
 				"write": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.vehicleSoc",
+			"type": "state",
+			"common": {
+				"name": {
+					"en": "Vehicle State of charge"
+				},
+				"desc": "State of charge of the Vehicle currently charging",
+				"type": "number",
+				"role": "value.battery",
+				"read": true,
+				"write": false,
+				"unit": "%",
+				"def": 0,
+				"min": 0,
+				"max": 100
 			},
 			"native": {}
 		},

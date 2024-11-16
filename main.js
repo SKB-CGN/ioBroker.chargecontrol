@@ -53,7 +53,8 @@ class chargecontrol extends utils.Adapter {
 		this.lastAction = null;
 		this.chargeLimit = 0;
 		this.carSoc = null;
-		this.power = 0;
+		this.currentAmp = 0;
+		this.requestAmp = 0;
 		this.adapterIntervals = {
 			start: null,
 			stop: null,
@@ -71,7 +72,7 @@ class chargecontrol extends utils.Adapter {
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
 		// this.on('objectChange', this.onObjectChange.bind(this));
-		// this.on('message', this.onMessage.bind(this));
+		this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 	}
 
@@ -89,7 +90,7 @@ class chargecontrol extends utils.Adapter {
 			// Config
 			const tmpChargeMode = await this.getStateAsync('control.mode');
 			const tmpChargeLimit = await this.getStateAsync('control.chargeLimit');
-			const tmpPower = await this.getStateAsync('control.chargePower');
+			const tmpAmpere = await this.getStateAsync('control.chargeAmpere');
 
 			const tmpWallboxConnected = await this.getForeignStateAsync(this.config.wallbox_connected);
 
@@ -114,7 +115,7 @@ class chargecontrol extends utils.Adapter {
 			this.chargeMode = Number(tmpChargeMode.val);
 			this.chargeLimit = tmpChargeLimit.val;
 			this.wallboxConnected = tmpWallboxConnected.val;
-			this.power = tmpPower.val;
+			this.currentAmp = tmpAmpere.val;
 			this.availableCars = this.config.carList;
 
 			configOK = true;
@@ -146,7 +147,7 @@ class chargecontrol extends utils.Adapter {
 					this.carConnectArray.push(this.availableCars[i].connected);
 
 					// Detect an already connected car
-					if (this.currentCarConfig.length == 0 && this.availableCars[i].connected != '') {
+					if (this.wallboxConnected && this.currentCarConfig.length == 0 && this.availableCars[i].connected != '') {
 						const tmpCarCon = await this.getForeignStateAsync(this.availableCars[i].connected);
 						const tmpCarSoc = await this.getForeignStateAsync(this.availableCars[i].soc);
 
@@ -162,15 +163,14 @@ class chargecontrol extends utils.Adapter {
 			}
 
 			this.log.info(`Current connected car: ${this.currentCarConfig.name || 'No car connected!'}`);
-			if (this.currentCarConfig.name) {
-				this.setInfoStates({ vehicleName: this.currentCarConfig.name });
-			}
+			this.setInfoStates({ vehicleName: this.currentCarConfig.name || 'No car connected!', vehicleSoc: this.currentCar.soc });
+
 
 			if (this.config.surplus_id != '') {
 				subscribeArray.push(this.config.surplus_id);
 			}
 
-			this.log.info(JSON.stringify(this.config.carList));
+			this.log.info('Notifications: ' + this.config.notificationsType + ' ' + this.config.telegramInstance + ' ' + this.config.telegramRecipient);
 
 			this.subscribeForeignStatesAsync(subscribeArray);
 			this.log.info("Requesting the following states: " + subscribeArray.toString());
@@ -219,6 +219,10 @@ class chargecontrol extends utils.Adapter {
 
 					// If no car is connected - new car has been connected
 					if (state.val === true && this.currentCar.connected === false) {
+						this.setInfoStates({
+							vehicleName: 'Identifying car'
+						});
+
 						// Request to update all cars
 						this.updateAllCars();
 					}
@@ -230,16 +234,12 @@ class chargecontrol extends utils.Adapter {
 							connected: false,
 							soc: 0
 						}
+						// Update Info
+						this.setInfoStates({
+							vehicleName: '',
+							vehicleSoc: 0
+						});
 					}
-				}
-
-				// Surplus
-				if (id == this.config.surplus_id) {
-					// Format it
-					let tmpPower = this.surplus_option ? Number(state.val * 1000) : Number(state.val);
-
-					// Set surplus
-					this.currentSurplus = this.surplus_positive ? Math.max(0, tmpPower) : Math.abs(tmpPower);
 				}
 
 				// Update current car only, if Wallbox is connected to a car
@@ -287,6 +287,9 @@ class chargecontrol extends utils.Adapter {
 					if (this.carSocArray.includes(id)) {
 						this.log.info(`CurrentCar Soc updated: ${state.val}`)
 						this.currentCar.soc = Number(state.val);
+						this.setInfoStates({
+							vehicleSoc: this.currentCar.soc
+						});
 					}
 				}
 			}
@@ -301,12 +304,11 @@ class chargecontrol extends utils.Adapter {
 							this.chargeMode = Number(state.val);
 							this.log.info(`ChargeMode changed to: ${this.chargeModes[state.val]}!`);
 							break;
-						case 'chargePower':
-							this.power = Number(state.val);
-							this.log.info(`Charge - Power changed to: ${state.val}A!`);
-							this.chargeCompleted = false;
+						case 'chargeAmpere':
+							this.requestAmp = Number(state.val);
+							this.log.info(`Charge - Ampere changed to: ${state.val}A!`);
 							if (this.chargeInProgress) {
-								await this.setWallbox();
+								await this.setWallbox(true);
 							}
 							break;
 						case 'chargeLimit':
@@ -318,6 +320,15 @@ class chargecontrol extends utils.Adapter {
 							this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 							break;
 					}
+				} else {
+					// Surplus
+					if (id == this.config.surplus_id) {
+						// Format it
+						let tmpPower = this.surplus_option ? Number(state.val * 1000) : Number(state.val);
+
+						// Set surplus
+						this.currentSurplus = this.surplus_positive ? Math.max(0, tmpPower) : Math.abs(tmpPower);
+					}
 				}
 			}
 
@@ -326,8 +337,59 @@ class chargecontrol extends utils.Adapter {
 		}
 	}
 
+	/**
+	  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+	  * Using this method requires "common.messagebox" property to be set to true in io-package.json
+	  * @param {ioBroker.Message} obj
+	 */
+	async onMessage(obj) {
+		//this.log.debug(`[onMessage] received command: ${obj.command} with message: ${JSON.stringify(obj.message)}`);
+		if (obj && obj.message) {
+			if (typeof obj.message === 'object') {
+				this.log.info(obj.command + ': ' + JSON.stringify(obj.message));
+				switch (obj.command) {
+					case 'getTelegramUserConfig':
+						if (obj && obj.message) {
+							const inst = obj.message.instance ? obj.message.instance : this.config.telegramInstance;
+							this.getForeignState(`${inst}.communicate.users`, (err, state) => {
+								err && this.log.error(err);
+								if (state && state.val) {
+									const userListStr = state?.val;
+									const targets = [{ value: 'allTelegramUsers', label: 'All Receiver' }];
+									try {
+										if (userListStr) {
+											const userList = JSON.parse(userListStr);
+											for (const i in userList) {
+												targets.push({
+													value: userList[i].firstName ? userList[i].firstName : userList[i].userName,
+													label: userList[i].firstName ? userList[i].firstName : userList[i].userName
+												});
+											}
+											this.sendTo(obj.from, obj.command, targets, obj.callback);
+											this.log.debug(obj.command + ': ' + JSON.stringify(targets));
+										} else {
+											this.sendTo(obj.from, obj.command, [{ label: 'Not available', value: '' }], obj.callback);
+										}
+									} catch (err) {
+										err && this.log.error(err);
+										this.log.error('Cannot parse stored user IDs from Telegram!');
+									}
+								}
+							});
+						}
+						break;
+				}
+			} else {
+				this.log.error(`[onMessage] Received incomplete message via 'sendTo'`);
+
+				if (obj.callback) {
+					this.sendTo(obj.from, obj.command, { error: 'Incomplete message' }, obj.callback);
+				}
+			}
+		}
+	}
 	async manageCharging() {
-		this.log.info(`Charge - Log: Charge - Mode: ${this.chargeModes[this.chargeMode]}, Charge in progress: ${this.chargeInProgress}, Wallbox connected: ${this.wallboxConnected}, Car connected: ${this.currentCar.connected}, Car Soc: ${this.currentCar.soc}%, Charge - Limit: ${this.chargeLimit}% `);
+		this.log.debug(`Charge - Log: Charge - Mode: ${this.chargeModes[this.chargeMode]}, Charge in progress: ${this.chargeInProgress}, Wallbox connected: ${this.wallboxConnected}, Car connected: ${this.currentCar.connected}, Car Soc: ${this.currentCar.soc}%, Charge - Limit: ${this.chargeLimit}% `);
 		switch (this.chargeMode) {
 			// ChargeMode 0: Deactivated, 1: Only-Surplus, 2: Minimal + Surplus, 3: Fast
 			case 0:
@@ -337,11 +399,95 @@ class chargecontrol extends utils.Adapter {
 				}
 				break;
 			case 1:
-				/*
-				if (this.currentSurplus > this.wallbox_ampere_min * 2) {
-					this.log.info('Enough surplus: ${tmpSurplus} (${this.currentSurplus})!');
+				const minSurplus = this.getWattFromAmpere(this.wallbox_ampere_min);
+				this.log.info(`Current surplus: ${this.currentSurplus} (+ Wallbox usage: ${this.getWattFromAmpere(this.currentAmp)}) | Minimal needed suplus: ${minSurplus}`);
+
+				if (this.wallboxConnected) {
+					// Charging in Progress - regulate the Wallbox
+					if (this.chargeInProgress) {
+						// Surplus Rest-Ampere
+						const restAmp = Math.floor(this.getAmpereFromWatt(Math.abs(this.currentSurplus)));
+
+						// Surplus is still enough - proceed
+						if (this.currentSurplus > 0) {
+							// Can Wallbox be raised?
+							if (this.currentAmp + restAmp <= this.wallbox_ampere_max) {
+								this.requestAmp = this.currentAmp + restAmp;
+
+								this.log.info(`Requesting to regulate the Wallbox to: ${this.requestAmp}A`);
+
+								// Set the Wallbox
+								this.setWallbox();
+							}
+						}
+
+						// Surplus is negative - try to regulate the wallbox
+						if (this.currentSurplus < 0) {
+							// Can Wallbox be lowered?
+							if (this.currentAmp - restAmp >= this.wallbox_ampere_min) {
+								this.requestAmp = this.currentAmp - restAmp;
+
+								// Set the Wallbox
+								this.setWallbox();
+
+								// Stopping not necessary
+								this.adapterIntervals.stop = null;
+							} else {
+								// Already at lowest Amps?
+								if (this.currentAmp == this.wallbox_ampere_min) {
+									// Activate Stop Timeout
+									if (!this.adapterIntervals.stop) {
+										this.adapterIntervals.stop = Date.now();
+										this.log.info(`Setting timeout for stopping the wallbox: ${this.timeout_stop} seconds!`);
+									} else {
+										const elapsedTime = Date.now() - this.adapterIntervals.stop;
+										if (elapsedTime >= this.timeout_stop * 1000) {
+											// No chance during timeOut - need to stop
+											this.stopWallbox();
+
+											this.adapterIntervals.stop = null; // Reset the timer for next stop
+										}
+									}
+								} else {
+									// Give it another try
+									this.requestAmp = this.wallbox_ampere_min;
+
+									// Set the Wallbox
+									this.setWallbox();
+								}
+							}
+						}
+					}
+
+					// Charging not in progress - check prerequisites to start charging
+					if (!this.chargeInProgress) {
+						if (this.currentSurplus > minSurplus) {
+							this.log.info(`Current surplus is high enough.`);
+							if (!this.adapterIntervals.start) {
+								this.adapterIntervals.start = Date.now();
+								this.log.info(`Setting timeout for starting the wallbox: ${this.timeout_start} seconds!`);
+							} else {
+								const elapsedTime = Date.now() - this.adapterIntervals.start;
+								if (elapsedTime >= this.timeout_start * 1000) {
+									// Calculate the current Power for Wallbox
+									this.requestAmp = Math.floor(this.getAmpereFromWatt(this.currentSurplus));
+									this.log.info(`Requesting ${this.requestAmp}A for Wallbox!`);
+
+									// Set the Wallbox
+									this.setWallbox();
+
+									// Start the Wallbox
+									this.startWallbox();
+
+									this.adapterIntervals.start = null; // Reset the timer for next start
+								} else {
+									this.log.info(`Waiting ${Math.floor(this.timeout_start - (elapsedTime / 1000))} seconds to start the wallbox!`);
+								}
+							}
+						}
+					}
 				}
-					*/
+
 				break;
 
 			case 2:
@@ -355,9 +501,10 @@ class chargecontrol extends utils.Adapter {
 					// Not charging
 					if (!this.chargeInProgress) {
 						if (this.currentCar.soc != null && this.currentCar.soc < this.chargeLimit) {
-							this.log.info(`Start charging 'Normal'! Car Soc: ${this.currentCar.soc}% | ChargeLimit: ${this.chargeLimit}% | Power: ${this.power}A`);
+							this.log.info(`Start charging 'Normal'! Car Soc: ${this.currentCar.soc}% | ChargeLimit: ${this.chargeLimit}% | Ampere: ${this.currentAmp}A`);
 
 							// Set the power
+							this.requestAmp = this.wallbox_ampere_max;
 							await this.setWallbox();
 
 							// Start the Wallbox
@@ -426,6 +573,7 @@ class chargecontrol extends utils.Adapter {
 			{ key: 'info.chargeRemainingPower', value: info.chargingPower },
 			{ key: 'info.chargeRemainingPercent', value: info.chargingPercent },
 			{ key: 'info.vehicleName', value: info.vehicleName },
+			{ key: 'info.vehicleSoc', value: info.vehicleSoc }
 		];
 
 		for (const state of states) {
@@ -450,24 +598,46 @@ class chargecontrol extends utils.Adapter {
 
 			this.log.info('Sending start command to Wallbox!');
 			this.setForeignStateAsync(this.wallbox_start, true);
+
+			// Notification
+			this.sendNotification();
 		} else {
 			this.log.warn('Can not start the Wallbox - no state defined!');
 		}
 	}
 
-	async setWallbox() {
+	sendNotification() {
+		if (this.config.notificationEnable) {
+			switch (this.config.notificationsType) {
+				case 'Telegram':
+					if (this.config.telegramRecipient && this.config.telegramRecipient === 'allTelegramUsers') {
+						this.sendTo(this.config.telegramInstance, 'send', { text: 'ChargeControl:\nStarting to charge!', disable_notification: this.config.telegramSilentNotice });
+					} else {
+						this.sendTo(this.config.telegramInstance, 'send', { user: this.config.telegramRecipient, text: 'ChargeControl:\nStarting to charge!', disable_notification: this.config.telegramSilentNotice });
+					}
+					break;
+				case 'E-Mail':
+					// Include later
+					break;
+			}
+		}
+	}
+
+	async setWallbox(user = false) {
 		if (this.config.wallbox_power != '') {
 			if (!this.adapterIntervals.power) {
-				await this.setWallboxPower();
+				await this.setWallboxAmpere();
 				this.adapterIntervals.power = Date.now();
 				this.log.info(`Setting timeout for wallbox - power to: ${this.timeout_power} seconds!`);
 			} else {
 				const elapsedTime = Date.now() - this.adapterIntervals.power;
 				if (elapsedTime >= this.timeout_power * 1000) {
-					await this.setWallboxPower();
-					this.adapterIntervals.power = Date.now();;
+					await this.setWallboxAmpere();
+					this.adapterIntervals.power = Date.now();
 				} else {
-					this.log.info(`Can not set new value for power.Please wait: ${Math.floor(this.timeout_power - (elapsedTime / 1000))} seconds!`)
+					if (user) {
+						this.log.warn(`Can not set new value for Ampere! Please wait ${Math.floor(this.timeout_power - (elapsedTime / 1000))} seconds! And retry!`)
+					}
 				}
 			}
 
@@ -476,9 +646,24 @@ class chargecontrol extends utils.Adapter {
 		}
 	}
 
-	async calculateChargeTime() {
+	async setWallboxAmpere() {
+		this.currentAmp = Math.min(Math.max(this.requestAmp, this.wallbox_ampere_min), this.wallbox_ampere_max);
+		this.log.info(`Setting Wallbox Power to: ${this.currentAmp} Ampere!`);
+		//await this.setForeignStateAsync(this.config.wallbox_power, this.currentAmp);
+	}
+
+	updateAllCars() {
+		this.log.info('Requesting to update all cars!');
+		for (let i = 0; i < this.availableCars.length; i++) {
+			if (this.availableCars[i].update != '') {
+				this.setForeignStateAsync(this.availableCars[i].update, true);
+			}
+		}
+	}
+
+	calculateChargeTime() {
 		if (this.currentCarConfig.capacity > 0) {
-			const tmpWatt = this.getWattFromAmpere(this.power);
+			const tmpWatt = this.getWattFromAmpere(this.currentAmp);
 			const capacityInWh = this.currentCarConfig.capacity * 1000;
 
 			// Calc left capacity of current SOC till chargeLimit
@@ -492,24 +677,9 @@ class chargecontrol extends utils.Adapter {
 
 			this.setInfoStates({
 				chargingDuration: timeInMinutes,
-				chargingPower: this.power,
+				chargingPower: energyToChargeWh,
 				chargingPercent: remainingPercent
 			});
-		}
-	}
-
-	async setWallboxPower() {
-		const tmpAmpere = Math.min(Math.max(this.power, this.wallbox_ampere_min), this.wallbox_ampere_max);
-		this.log.info(`Setting Wallbox Power to: ${tmpAmpere} Ampere!`);
-		this.setForeignStateAsync(this.config.wallbox_power, tmpAmpere);
-	}
-
-	updateAllCars() {
-		this.log.info('Requesting to update all cars!');
-		for (let i = 0; i < this.availableCars.length; i++) {
-			if (this.availableCars[i].update != '') {
-				this.setForeignStateAsync(this.availableCars[i].update, true);
-			}
 		}
 	}
 
@@ -545,21 +715,6 @@ class chargecontrol extends utils.Adapter {
 			this.setForeignStateAsync(this.currentCarConfig.update, true);
 		} else {
 			this.log.warn('Can not request update from car as no Data point for Car Update is configured!');
-		}
-	}
-
-	async checkPrerequisites() {
-		// Car Soc below chargeLimit
-		if (this.config.car_soc != '') {
-			const tmpCarSoc = await this.getForeignStateAsync(this.car_soc);
-			const tmpChargeLimit = tmpCarSoc ? tmpCarSoc.val < this.chargeLimit : true;
-
-			this.log.info(`Checking Prerequisites: Car connected: ${this.wallboxConnected}, Car Soc belowChargeLimit: ${tmpChargeLimit} (Car: ${tmpCarSoc.val} | Limit: ${this.chargeLimit})!`);
-
-			return this.wallboxConnected && tmpChargeLimit;
-		} else {
-			this.log.warn("You can not use the mode 'Normal charge (with ChargeLimit)' without having a state for the SoC of the car!");
-			return false;
 		}
 	}
 
