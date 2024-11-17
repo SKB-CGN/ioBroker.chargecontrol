@@ -115,6 +115,7 @@
 		"telegramInstance": "telegram.0",
 		"emailInstance": "email.0",
 		"telegramRecipient": "",
+		"resetFinished": false,
 		"telegramSilentNotice": false
 	},
 	"objects": [],

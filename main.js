@@ -181,7 +181,7 @@ class chargecontrol extends utils.Adapter {
 			this.manageCharging();
 		} else {
 			this.log.error("Adapter shutting down, as no state is entered for 'wallbox connected'!");
-			await this.stop?.({ exitCode: 11, reason: 'Config is invalid!' });
+			await this.stop?.({ exitCode: 11, reason: 'invalid config' });
 		}
 	}
 
@@ -239,6 +239,9 @@ class chargecontrol extends utils.Adapter {
 							vehicleName: '',
 							vehicleSoc: 0
 						});
+
+						// Reset mode
+						this.resetFinished();
 					}
 				}
 
@@ -303,6 +306,12 @@ class chargecontrol extends utils.Adapter {
 						case 'mode':
 							this.chargeMode = Number(state.val);
 							this.log.info(`ChargeMode changed to: ${this.chargeModes[state.val]}!`);
+
+							// Reset charging completed, to check the new modes
+							this.chargeCompleted = false;
+							this.setInfoStates({
+								chargingCompleted: false
+							})
 							break;
 						case 'chargeAmpere':
 							this.requestAmp = Number(state.val);
@@ -396,64 +405,83 @@ class chargecontrol extends utils.Adapter {
 				if (this.chargeInProgress) {
 					this.log.info('Stopping active charging session!');
 					this.stopWallbox();
+				} else {
+					this.setInfoStates({
+						charging: false,
+						chargingCompleted: false,
+						chargingDuration: 0,
+						chargingPower: 0,
+						chargingPercent: 0
+					});
 				}
 				break;
 			case 1:
-				const minSurplus = this.getWattFromAmpere(this.wallbox_ampere_min);
-				this.log.info(`Current surplus: ${this.currentSurplus} (+ Wallbox usage: ${this.getWattFromAmpere(this.currentAmp)}) | Minimal needed suplus: ${minSurplus}`);
-
-				if (this.wallboxConnected) {
+				if (this.wallboxConnected && this.currentCar.connected) {
 					// Charging in Progress - regulate the Wallbox
+					const minSurplus = this.getWattFromAmpere(this.wallbox_ampere_min);
+
 					if (this.chargeInProgress) {
-						// Surplus Rest-Ampere
-						const restAmp = Math.floor(this.getAmpereFromWatt(Math.abs(this.currentSurplus)));
 
-						// Surplus is still enough - proceed
-						if (this.currentSurplus > 0) {
-							// Can Wallbox be raised?
-							if (this.currentAmp + restAmp <= this.wallbox_ampere_max) {
-								this.requestAmp = this.currentAmp + restAmp;
+						this.log.info(`Current surplus: ${this.currentSurplus} (+ Wallbox usage: ${this.getWattFromAmpere(this.currentAmp)}) | Minimal needed suplus: ${minSurplus}`);
 
-								this.log.info(`Requesting to regulate the Wallbox to: ${this.requestAmp}A`);
+						// Check the Charge-Limit
+						if (this.currentCar.soc >= this.chargeLimit) {
+							this.log.info(`Car SoC of ${this.currentCar.soc}% reached ChargeLimit of ${this.chargeLimit}% ! Stop charging!`);
+							await this.stopWallbox();
+						} else {
+							// Get the car SoC
+							await this.getCarSoc();
 
-								// Set the Wallbox
-								this.setWallbox();
-							}
-						}
+							// Surplus Rest-Ampere
+							const restAmp = Math.floor(this.getAmpereFromWatt(Math.abs(this.currentSurplus)));
 
-						// Surplus is negative - try to regulate the wallbox
-						if (this.currentSurplus < 0) {
-							// Can Wallbox be lowered?
-							if (this.currentAmp - restAmp >= this.wallbox_ampere_min) {
-								this.requestAmp = this.currentAmp - restAmp;
+							// Surplus is still enough - proceed
+							if (this.currentSurplus > 0) {
+								// Can Wallbox be raised?
+								if (this.currentAmp + restAmp <= this.wallbox_ampere_max) {
+									this.requestAmp = this.currentAmp + restAmp;
 
-								// Set the Wallbox
-								this.setWallbox();
-
-								// Stopping not necessary
-								this.adapterIntervals.stop = null;
-							} else {
-								// Already at lowest Amps?
-								if (this.currentAmp == this.wallbox_ampere_min) {
-									// Activate Stop Timeout
-									if (!this.adapterIntervals.stop) {
-										this.adapterIntervals.stop = Date.now();
-										this.log.info(`Setting timeout for stopping the wallbox: ${this.timeout_stop} seconds!`);
-									} else {
-										const elapsedTime = Date.now() - this.adapterIntervals.stop;
-										if (elapsedTime >= this.timeout_stop * 1000) {
-											// No chance during timeOut - need to stop
-											this.stopWallbox();
-
-											this.adapterIntervals.stop = null; // Reset the timer for next stop
-										}
-									}
-								} else {
-									// Give it another try
-									this.requestAmp = this.wallbox_ampere_min;
+									this.log.info(`Requesting to regulate the Wallbox to: ${this.requestAmp}A`);
 
 									// Set the Wallbox
 									this.setWallbox();
+								}
+							}
+
+							// Surplus is negative - try to regulate the wallbox
+							if (this.currentSurplus < 0) {
+								// Can Wallbox be lowered?
+								if (this.currentAmp - restAmp >= this.wallbox_ampere_min) {
+									this.requestAmp = this.currentAmp - restAmp;
+
+									// Set the Wallbox
+									this.setWallbox();
+
+									// Stopping not necessary
+									this.adapterIntervals.stop = null;
+								} else {
+									// Already at lowest Amps?
+									if (this.currentAmp == this.wallbox_ampere_min) {
+										// Activate Stop Timeout
+										if (!this.adapterIntervals.stop) {
+											this.adapterIntervals.stop = Date.now();
+											this.log.info(`Setting timeout for stopping the wallbox: ${this.timeout_stop} seconds!`);
+										} else {
+											const elapsedTime = Date.now() - this.adapterIntervals.stop;
+											if (elapsedTime >= this.timeout_stop * 1000) {
+												// No chance during timeOut - need to stop
+												this.stopWallbox();
+
+												this.adapterIntervals.stop = null; // Reset the timer for next stop
+											}
+										}
+									} else {
+										// Give it another try
+										this.requestAmp = this.wallbox_ampere_min;
+
+										// Set the Wallbox
+										this.setWallbox();
+									}
 								}
 							}
 						}
@@ -461,28 +489,43 @@ class chargecontrol extends utils.Adapter {
 
 					// Charging not in progress - check prerequisites to start charging
 					if (!this.chargeInProgress) {
-						if (this.currentSurplus > minSurplus) {
-							this.log.info(`Current surplus is high enough.`);
-							if (!this.adapterIntervals.start) {
-								this.adapterIntervals.start = Date.now();
-								this.log.info(`Setting timeout for starting the wallbox: ${this.timeout_start} seconds!`);
-							} else {
-								const elapsedTime = Date.now() - this.adapterIntervals.start;
-								if (elapsedTime >= this.timeout_start * 1000) {
-									// Calculate the current Power for Wallbox
-									this.requestAmp = Math.floor(this.getAmpereFromWatt(this.currentSurplus));
-									this.log.info(`Requesting ${this.requestAmp}A for Wallbox!`);
-
-									// Set the Wallbox
-									this.setWallbox();
-
-									// Start the Wallbox
-									this.startWallbox();
-
-									this.adapterIntervals.start = null; // Reset the timer for next start
+						if (this.currentCar.soc != null && this.currentCar.soc < this.chargeLimit) {
+							this.log.info(`Start charging 'Surplus'! Car Soc: ${this.currentCar.soc}% | ChargeLimit: ${this.chargeLimit}% | Ampere: ${this.currentAmp}A`);
+							if (this.currentSurplus > minSurplus) {
+								this.log.info(`Current surplus is high enough.`);
+								if (!this.adapterIntervals.start) {
+									this.adapterIntervals.start = Date.now();
+									this.log.info(`Setting timeout for starting the wallbox: ${this.timeout_start} seconds!`);
 								} else {
-									this.log.info(`Waiting ${Math.floor(this.timeout_start - (elapsedTime / 1000))} seconds to start the wallbox!`);
+									const elapsedTime = Date.now() - this.adapterIntervals.start;
+									if (elapsedTime >= this.timeout_start * 1000) {
+										// Calculate the current Power for Wallbox
+										this.requestAmp = Math.floor(this.getAmpereFromWatt(this.currentSurplus));
+										this.log.info(`Requesting ${this.requestAmp}A for Wallbox!`);
+
+										// Set the Wallbox
+										this.setWallbox();
+
+										// Start the Wallbox
+										this.startWallbox();
+
+										this.adapterIntervals.start = null; // Reset the timer for next start
+									} else {
+										this.log.info(`Waiting ${Math.floor(this.timeout_start - (elapsedTime / 1000))} seconds to start the wallbox!`);
+									}
 								}
+							}
+						} else {
+							if (!this.chargeCompleted) {
+								this.log.info(`Start of charging skipped! Car SoC ${this.currentCar.soc}% is equal / over ChargeLimit of ${this.chargeLimit}% !`);
+								this.chargeCompleted = true;
+								this.setInfoStates({
+									charging: false,
+									chargingCompleted: true,
+									chargingDuration: 0,
+									chargingPower: 0,
+									chargingPercent: 0
+								});
 							}
 						}
 					}
@@ -511,7 +554,7 @@ class chargecontrol extends utils.Adapter {
 							await this.startWallbox();
 						} else {
 							if (!this.chargeCompleted) {
-								this.log.info(`Start of charging skipped.Car SoC ${this.currentCar.soc}% is equal / over ChargeLimit of ${this.chargeLimit}% !`);
+								this.log.info(`Start of charging skipped! Car SoC ${this.currentCar.soc}% is equal / over ChargeLimit of ${this.chargeLimit}% !`);
 								this.chargeCompleted = true;
 								this.setInfoStates({
 									charging: false,
@@ -520,6 +563,9 @@ class chargecontrol extends utils.Adapter {
 									chargingPower: 0,
 									chargingPercent: 0
 								});
+
+								// Reset mode
+								this.resetFinished();
 							}
 						}
 					}
@@ -528,7 +574,7 @@ class chargecontrol extends utils.Adapter {
 					if (this.chargeInProgress) {
 						// Check the Charge-Limit
 						if (this.currentCar.soc >= this.chargeLimit) {
-							this.log.info(`Car SoC of ${this.currentCar.soc}% reached ChargeLimit of ${this.chargeLimit}% !Stop charging!`);
+							this.log.info(`Car SoC of ${this.currentCar.soc}% reached ChargeLimit of ${this.chargeLimit}% ! Stop charging!`);
 							await this.stopWallbox();
 						} else {
 							// Get the car SoC
@@ -558,10 +604,21 @@ class chargecontrol extends utils.Adapter {
 				chargingPercent: 0
 			});
 
+			// Reset mode
+			this.resetFinished();
+
 			this.log.info('Sending stop command to Wallbox!');
 			this.setForeignStateAsync(this.wallbox_stop, true);
 		} else {
 			this.log.warn('Can not stop the Wallbox - no state defined!');
+		}
+	}
+
+	resetFinished() {
+		// If reset to finished, change the mode to surplus
+		if (this.chargeMode != 0 && this.config.resetFinished) {
+			this.log.info('Resetting the mode to "Only Surplus"!');
+			this.setStateAsync('control.mode', 1);
 		}
 	}
 
