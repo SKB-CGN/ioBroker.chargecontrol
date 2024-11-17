@@ -1,0 +1,314 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+	<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+
+	<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+	<script type="text/javascript" src="../../js/translate.js"></script>
+	<script type="text/javascript" src="../../lib/js/materialize.js"></script>
+	<script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/adapter-settings.js"></script>
+
+	<script type="text/javascript" src="words.js"></script>
+	<style>
+		.m .col .select-wrapper+label {
+			top: -26px;
+		}
+
+		.m span {
+			font-size: 0.9em;
+		}
+
+		.adapter-body {
+			height: 100%;
+		}
+
+		@media screen and (max-width: 768px) {
+			.adapter-body {
+				overflow: auto;
+			}
+		}
+
+		#charge_progress {
+			border-radius: 13px;
+			height: 26px;
+			padding: 2px;
+			width: 100%;
+		}
+
+		#charge_progress div {
+			text-align: center;
+			width: 0px;
+			height: 22px;
+			border-radius: 10px;
+			transition: width 1s ease-in;
+		}
+
+		#chargeTable {
+			td:first-of-type {
+				width: 30px;
+			}
+		}
+
+		.inline_icon {
+			display: inline-flex;
+			vertical-align: middle;
+			padding-right: 10px;
+		}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+		});
+
+		isMaterialize = true;
+		noConfigDialog = true;
+		let subscribeObjID = new Array();
+
+		$(function () {
+			$('.changeValue').on('change', function () {
+				const tmpState = this.id.replace('elm_', '');
+				const destState = `${adapter}.${instance}.control.${tmpState}`;
+				console.log(`Value: Requesting to change '${destState} with value: ${this.value}`);
+
+				setState(destState, this.value);
+			});
+
+			$("#allow_charge").on('click', function () {
+				setState(`${adapter}.${instance}.control.startGuestCharge`, true);
+				showMessage(translateWord('tab_allow_charge'), '', 'check_circle');
+			});
+		});
+
+		function setState(state, value) {
+			socket.emit('setState', state, value, function (err, res) {
+				if (err) {
+					console.log("An error occured, while setting the state. The following error was provided: " + err);
+				} else {
+					console.debug('The state was set successfully!');
+				}
+			});
+		}
+
+		function load(settings, onChange) {
+			if (!settings) return;
+			// Hide the help
+			this.setTimeout(() => { $(".help-link").hide(); }, 10);
+
+			subscribeObjID = [`${adapter}.${instance}.info.*`, `${adapter}.${instance}.control.*`];
+
+			// Subscribe to changes
+			socket.emit('subscribe', subscribeObjID);
+			console.log('[Socket] subscribed to: ' + subscribeObjID.toString());
+
+			// load initial Data
+			readStates();
+		}
+
+		socket.on('connect', async function () {
+			let date = new Date().toLocaleString();
+			console.log(`[Socket] connected at ${date}`);
+		});
+
+		socket.on('stateChange', function (stateId, state) {
+			setTimeout(function () {
+				const tmpState = stateId.split('.').pop();
+
+				if (state) {
+					setTableState(tmpState, state.val);
+				}
+
+				console.log('changed ' + tmpState);
+
+				// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+				M.updateTextFields();
+				$('select').select();
+			}, 0);
+		});
+
+		function setTableState(state, value) {
+			// Set the Value
+			const $dest = $(`#elm_${state}`);
+			if ($dest.is(':not(:input)')) {
+
+				// Set the color only for true/false
+				if (value === true) {
+					$dest.text(translateWord('tab_value_active')).addClass('green-text').removeClass('grey-text');
+					return;
+				}
+
+				if (value === false) {
+					$dest.text(translateWord('tab_value_not_active')).addClass('grey-text').removeClass('green-text');
+					return;
+				}
+
+				// Car connected
+				if (state == 'vehicleName') {
+					if (value == 'No car connected!') {
+						$dest.text(translateWord('tab_value_no_car')).addClass('grey-text').removeClass('green-text orange-text');
+					}
+
+					if (value == 'Identifying car') {
+						// Guest car - show button - remove text
+						$dest.text(translateWord('tab_unknown_car')).addClass('orange-text').removeClass('green-text grey-text');
+						$("#trusted_car").hide();
+						$("#allow_charge").show();
+					} else {
+						$("#trusted_car").show();
+						$("#allow_charge").hide();
+						$dest.text(value).addClass('green-text').removeClass('grey-text orange-text');
+					}
+					return;
+				}
+
+				// Default
+				$dest.text(value);
+			} else {
+				$dest.val(value);
+			}
+
+			// Add the SoC to bar
+			if (state == 'vehicleSoc') {
+				$("#elm_vehicleSoc").css('width', value + '%').text(value + '%');
+			}
+		}
+
+
+		function readStates() {
+			console.log("Read the states for: " + adapter + ' ' + instance);
+			socket.emit('getStates', `${adapter}.${instance}.*`, function (err, _states) {
+				if (err) {
+					console.log(err);
+				} else {
+					// Retrieve States
+					if (_states) {
+						console.log(_states);
+						Object.entries(_states).forEach(entry => {
+							const [key, value] = entry;
+							const tmpState = key.split('.').pop();
+							if (value) {
+								setTableState(tmpState, value.val);
+							}
+						});
+					}
+				}
+			});
+		}
+	</script>
+</head>
+
+<body>
+
+	<div class="m adapter-container">
+		<div class="row">
+			<!-- Forms are the standard way to receive user inputted data.
+			 Learn more http://materializecss.com/forms.html-->
+			<div class="row">
+				<div class="input-field col s6">
+					<img src="chargecontrol.png" class="logo">
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s6">
+					<span class="translate" data-lang="tab_intro">You can control the input fields and see the status of the
+						current session.</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col s12 m8 l6">
+					<table id="chargeTable">
+						<tbody>
+							<tr>
+								<td><i class="material-icons">check_circle</i></td>
+								<td class="translate" data-lang="tab_charging">Charging</td>
+								<td id="elm_charging"></td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">done_all</i></td>
+								<td class="translate" data-lang="tab_chargingCompleted">Charging Completed</td>
+								<td id="elm_chargingCompleted"></td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">directions_car</i></td>
+								<td class="translate" data-lang="tab_vehicleName">Vehicle connected to wallbox</td>
+								<td id="elm_vehicleName"></td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">battery_charging_full</i></td>
+								<td class="translate" data-lang="tab_vehicleSoc">Vehicle State of Charge</td>
+								<td colspan="2">
+									<div id="charge_progress" class="grey lighten-3">
+										<div class="green" id="elm_vehicleSoc"></div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">power</i></td>
+								<td class="translate" data-lang="tab_chargeRemainingPower">Remaining Power</td>
+								<td id="elm_chargeRemainingPower"></td>
+								<td>Wh</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">schedule</i></td>
+								<td class="translate" data-lang="tab_chargeRemainingDuration">Remaining Duration</td>
+								<td id="elm_chargeRemainingDuration"></td>
+								<td>Min.</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">keyboard_tab</i></td>
+								<td class="translate" data-lang="tab_chargeRemainingPercent">Rest of charging %</td>
+								<td id="elm_chargeRemainingPercent"></td>
+								<td>%</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">face</i></td>
+								<td class="translate" data-lang="tab_unknown_car">Unknown car/guest vehicle</td>
+								<td colspan="2"><a class="waves-effect waves-light btn" id="allow_charge">
+										<i class="material-icons left">check_circle</i>
+										<span class="translate" data-lang="tab_allowCharge">Allow charge process</span>
+									</a>
+									<span id="trusted_car" class="translate green-text" data-lang="tab_no_unknown_car">No unknown
+										car is
+										connected!</span>
+								</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">power</i></td>
+								<td class="translate" data-lang="tab_chargeAmpere">Amp</td>
+								<td><input type="number" class="value changeValue" id="elm_chargeAmpere" min="1" /></td>
+								<td>A</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">block</i></td>
+								<td class="translate" data-lang="tab_chargeLimit">Charging limit</td>
+								<td><input type="number" class="value changeValue" id="elm_chargeLimit" min="1" max="100" />
+								</td>
+								<td>%</td>
+							</tr>
+							<tr>
+								<td><i class="material-icons">create</i></td>
+								<td class="translate" data-lang="tab_mode">Modus</td>
+								<td colspan="2"><select class="value changeValue" id="elm_mode">
+										<option value="0" class="translate" data-lang="tab_mode_deactivated">Deactivated</option>
+										<option value="1" class="translate" data-lang="tab_mode_surplus">Only Surplus</option>
+										<option value="2" class="translate" data-lang="tab_mode_minimal">Minimal + Surplus
+										</option>
+										<option value="3" class="translate" data-lang="tab_mode_fast">Fast</option>
+									</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
