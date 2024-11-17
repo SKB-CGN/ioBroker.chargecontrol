@@ -179,9 +179,6 @@ class chargecontrol extends utils.Adapter {
 
 			// Handle Charging
 			this.manageCharging();
-		} else {
-			this.log.error("Adapter shutting down, as no state is entered for 'wallbox connected'!");
-			await this.stop?.({ exitCode: 11, reason: 'invalid config' });
 		}
 	}
 
