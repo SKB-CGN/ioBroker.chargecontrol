@@ -1,0 +1,17 @@
+{
+"charge_aborted":"The charging process for %s with the mode %s was aborted!",
+"charge_start":"The charging process for %s with the mode %s was started!",
+"charge_finished":"The charging process for %s with the mode %s has been completed!",
+"charge_limit":"Charging limit: %s",
+"wallbox_power":"Wallbox Power: %sA",
+"charge_power":"Energy to be charged: %sWh",
+"charged_power":"Charged energy: %sWh",
+"current_soc":"Current Soc: %s%",
+"duration":"Duration: %s Mins.",
+"estimated_duration":"Estimated duration: %s Mins.",
+"chargeMode_0":"Deactivated",
+"chargeMode_1":"Manually",
+"chargeMode_2":"Only-Surplus",
+"chargeMode_3":"Minimal + Surplus",
+"chargeMode_4":"Fast"
+}

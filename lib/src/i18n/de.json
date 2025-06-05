@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Der Ladevorgang für %s mit dem Modus %s wurde abgebrochen!",
+    "charge_start": "Der Ladevorgang für %s mit dem Modus %s wurde gestartet!",
+    "charge_finished": "Der Ladevorgang für %s mit dem Modus %s ist abgeschlossen!",
+    "charge_limit": "Ladelimit: %s",
+    "wallbox_power": "Wallbox-Leistung: %sA",
+    "charge_power": "Zu ladende Energie: %sWh",
+    "charged_power": "Geladene Energie: %sWh",
+    "current_soc": "Aktueller Soc: %s%",
+    "duration": "Dauer: %s Min.",
+    "estimated_duration": "Geschätzte Dauer: %s Min.",
+    "chargeMode_0": "Deaktiviert",
+    "chargeMode_1": "Manuell",
+    "chargeMode_2": "Nur-Überschuss",
+    "chargeMode_3": "Minimal + Überschuss",
+    "chargeMode_4": "Schnell"
+}

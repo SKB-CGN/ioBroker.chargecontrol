@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "¡El proceso de carga para %s con el modo %s fue cancelado!",
+    "charge_start": "¡Se inició el proceso de carga para %s con el modo %s!",
+    "charge_finished": "¡Se ha completado el proceso de carga para %s con el modo %s!",
+    "charge_limit": "Límite de carga: %s",
+    "wallbox_power": "Alimentación de la caja de empotrar: %sA",
+    "charge_power": "Energía a cargar: %sWh",
+    "charged_power": "Energía cargada: %sWh",
+    "current_soc": "Sociedad actual: %s%",
+    "duration": "Duración: %s min.",
+    "estimated_duration": "Duración estimada: %s Mins.",
+    "chargeMode_0": "Desactivado",
+    "chargeMode_1": "A mano",
+    "chargeMode_2": "Sólo excedente",
+    "chargeMode_3": "Mínimo + Excedente",
+    "chargeMode_4": "Rápido"
+}

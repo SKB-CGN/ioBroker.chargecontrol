@@ -1,0 +1,254 @@
+{
+   "type": "panel",
+   "i18n": true,
+   "items": {
+      "_logo": {
+         "type": "staticImage",
+         "noTranslation": true,
+         "src": "chargecontrol.png",
+         "newLine": true,
+         "xs": 2,
+         "sm": 2,
+         "md": 1,
+         "lg": 0.33,
+         "xl": 0.33
+      },
+      "chargeControlHeader": {
+         "type": "staticText",
+         "text": {
+            "en": "ChargeControl",
+            "de": "Ladesteuerung",
+            "ru": "ChargeControl",
+            "pt": "Controle de Carga",
+            "nl": "ChargeControl",
+            "fr": "Contrôle de charge",
+            "it": "ChargeControl",
+            "es": "ChargeControl",
+            "pl": "ChargeControl",
+            "uk": "Партнерство",
+            "zh-cn": "充电控制"
+         },
+         "style": {
+            "fontSize": 24
+         },
+         "xs": 10,
+         "sm": 10,
+         "md": 11,
+         "lg": 11,
+         "xl": 11
+      },
+      "_info": {
+         "newLine": true,
+         "type": "staticText",
+         "text": "tab_intro",
+         "size": 2,
+         "xs": 12,
+         "sm": 12,
+         "md": 12,
+         "lg": 12,
+         "xl": 12
+      },
+      "chargeModeDisplay": {
+         "newLine": true,
+         "type": "state",
+         "variant": "text",
+         "label": "tab_mode",
+         "oid": "control.mode",
+         "highlight": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeMode": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_mode",
+         "control": "button",
+         "validator": "console.log(Object.keys(window));",
+         "oid": "control.mode",
+         "buttonValue": 1,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeCurrent": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_chargeAmpere",
+         "control": "slider",
+         "controlDelay": 500,
+         "oid": "control.chargeCurrent",
+         "min": 6,
+         "max": 32,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "_divider0": {
+         "newLine": true,
+         "type": "divider",
+         "color": "primary",
+         "style": {
+            "width": "stretch"
+         },
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "wallboxStatus": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_wallboxStatus",
+         "oid": "ocpp.status",
+         "blinkOnUpdate": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "wallboxConnected": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_wallboxConnected",
+         "oid": "ocpp.connected",
+         "blinkOnUpdate": true,
+         "falseText": "tab_val_inact",
+         "falseTextStyle": {
+            "color": "red"
+         },
+         "trueText": "tab_val_act",
+         "trueTextStyle": {
+            "color": "green"
+         },
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "carConnected": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_carConnected",
+         "oid": "ocpp.carConnected",
+         "blinkOnUpdate": true,
+         "falseText": "tab_val_inact",
+         "falseTextStyle": {
+            "color": "red"
+         },
+         "trueText": "tab_val_act",
+         "trueTextStyle": {
+            "color": "green"
+         },
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeCurrentDisplay": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_chargeAmpereWB",
+         "oid": "ocpp.current",
+         "blinkOnUpdate": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "_divider1": {
+         "newLine": true,
+         "type": "divider",
+         "color": "primary",
+         "style": {
+            "width": "stretch"
+         },
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeCompleted": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_chargingCompleted",
+         "oid": "info.finished",
+         "blinkOnUpdate": true,
+         "trueText": "tab_val_completed",
+         "trueTextStyle": {
+            "color": "green"
+         },
+         "falseText": "tab_val_not_completed",
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeCharging": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_charging",
+         "oid": "info.charging",
+         "blinkOnUpdate": true,
+         "falseText": "tab_val_inact",
+         "trueText": "tab_val_act",
+         "trueTextStyle": {
+            "color": "green"
+         },
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargePower": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_power",
+         "oid": "ocpp.power",
+         "blinkOnUpdate": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeSession": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_powerSession",
+         "oid": "ocpp.session",
+         "blinkOnUpdate": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      },
+      "chargeDuration": {
+         "newLine": true,
+         "type": "state",
+         "label": "tab_chargeDuration",
+         "oid": "info.duration",
+         "blinkOnUpdate": true,
+         "xs": 12,
+         "sm": 12,
+         "md": 6,
+         "lg": 6,
+         "xl": 6
+      }
+   }
+}
