@@ -15,9 +15,6 @@ const DEFAULT_CONNECTOR_ID = 1;
 const DEFAULT_ID_TAG = 'iobcc';
 
 class chargecontrol extends utils.Adapter {
-    /**
-     * @param {Partial<utils.AdapterOptions>} [options={}]
-     */
     constructor(options) {
         super({
             ...options,
@@ -181,7 +178,7 @@ class chargecontrol extends utils.Adapter {
         const stateMeterStart = await this.getStateAsync('ocpp.meterStart');
         this.ocppCharge.meterStart = Number(stateMeterStart.val);
 
-        const subscribeArray = new Array();
+        const subscribeArray = [];
 
         /* Subscribe to own states */
         this.subscribeStates('control.*');
@@ -248,7 +245,7 @@ class chargecontrol extends utils.Adapter {
 
         // Subscribe to the states
         this.subscribeForeignStatesAsync(subscribeArray);
-        this.log.info('Requesting the following states: ' + subscribeArray.toString());
+        this.log.info(`Requesting the following states: ${subscribeArray.toString()}`);
 
         this.ocppPort = this.config.ocpp_port || 10116;
 
@@ -407,7 +404,7 @@ class chargecontrol extends utils.Adapter {
 
                     return true;
                 } catch (error) {
-                    this.log.error('An error occurred while configuring the Wallbox: ' + error);
+                    this.log.error(`An error occurred while configuring the Wallbox: ${error}`);
                     return false;
                 }
             };
@@ -543,8 +540,8 @@ class chargecontrol extends utils.Adapter {
                 previousStatus = currentStatus;
                 currentStatus = params;
 
-                this.log.info('[OCPP]: Previous Wallbox Status:' + JSON.stringify(previousStatus));
-                this.log.info('[OCPP]: Current Wallbox Status:' + JSON.stringify(currentStatus));
+                this.log.info(`[OCPP]: Previous Wallbox Status: ${JSON.stringify(previousStatus)}`);
+                this.log.info(`[OCPP]: Current Wallbox Status: ${JSON.stringify(currentStatus)}`);
 
                 this.setStateChangedAsync('ocpp.status', { val: currentStatus.status, ack: true });
 
@@ -735,7 +732,7 @@ class chargecontrol extends utils.Adapter {
                 const measurands = params?.meterValue[0]?.sampledValue;
 
                 // Tmp MeterValues
-                let supportedMeterValues = new Array();
+                let supportedMeterValues = [];
 
                 if (measurands) {
                     measurands.forEach(element => {
@@ -771,7 +768,7 @@ class chargecontrol extends utils.Adapter {
                     }
                 }
 
-                this.log.debug(`[OCPP]: Server got MeterValues from ${client.identity}: ` + JSON.stringify(params));
+                this.log.debug(`[OCPP]: Server got MeterValues from ${client.identity}: ${JSON.stringify(params)}`);
 
                 if (!setupComplete && !this.chargeDetails.inProgress) {
                     // Timeout for MeterValues
@@ -838,6 +835,7 @@ class chargecontrol extends utils.Adapter {
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      * @param {() => void} callback
      */
+
     onUnload(callback) {
         try {
             // Stop the OCPP-Server
@@ -853,7 +851,7 @@ class chargecontrol extends utils.Adapter {
 
             this.log.info('Adapter ChargeControl cleaned up everything ...');
             callback();
-        } catch (e) {
+        } catch {
             callback();
         }
     }
@@ -885,7 +883,7 @@ class chargecontrol extends utils.Adapter {
                     const tmpControl = id.split('.')[3];
                     switch (tmpControl) {
                         // ChargeMode
-                        case 'mode':
+                        case 'mode': {
                             const mode = Number(state.val);
                             this.chargeDetails.mode = mode;
                             this.log.info(`ChargeMode changed to: ${this.chargeModes[mode]}!`);
@@ -894,8 +892,9 @@ class chargecontrol extends utils.Adapter {
                             // Run the charge handler
                             this.chargeHandler();
                             break;
+                        }
 
-                        case 'chargeCurrent':
+                        case 'chargeCurrent': {
                             // Check, if we are using the correct values for Wallbox
                             const ampere = this.limitAmpere(Number(state.val));
                             this.chargeDetails.requestAmp = ampere;
@@ -912,6 +911,7 @@ class chargecontrol extends utils.Adapter {
                                 }
                             }
                             break;
+                        }
 
                         case 'homeBatteryLimit':
                             this.chargeDetails.homeBatteryLimit = Number(state.val);
@@ -1078,7 +1078,7 @@ class chargecontrol extends utils.Adapter {
             }
 
             const response = await vehicle.fullStatus({ refresh: force, parsed: true });
-            this.log.info(JSON.stringify(response));
+            this.log.debug(JSON.stringify(response));
             this.vehicle.status = response.vehicleStatus;
 
             this.setVehicleStatus();
@@ -1245,11 +1245,14 @@ class chargecontrol extends utils.Adapter {
                         // Zeitgeber zurücksetzen
                         this.clearStoredTimeout('surplusStop');
                         this.clearStoredTimeout('surplusStart');
+                        this.clearStoredTimeout('firstStart');
                     } else {
-                        this.log.info(
-                            `[Regulation]: Not enough surplus/battery power to maintain charging (possible: ${possibleAmp}A < min: ${this.settings.wallbox.minAmp}A)`,
-                        );
-                        surplusStop('Too little surplus to continue charging.');
+                        if (!this.adapterTimeouts.firstStart) {
+                            this.log.info(
+                                `[Regulation]: Not enough surplus/battery power to maintain charging (possible: ${possibleAmp}A < min: ${this.settings.wallbox.minAmp}A)`,
+                            );
+                            surplusStop('Too little surplus to continue charging.');
+                        }
                     }
                 } else {
                     // Currently not charging
@@ -1411,7 +1414,7 @@ class chargecontrol extends utils.Adapter {
         if (this.adapterTimeouts[key]) {
             clearTimeout(this.adapterTimeouts[key]);
             this.adapterTimeouts[key] = null;
-            this.log.info(`[Timeout]: Cleared timeout for ${key}`);
+            this.log.info(`[Timeout]: Cleared timeout for '${key}'!`);
 
             // Check, if we have a timer for it
             if (this.chargeDetails.time[key] > 0) {
@@ -1429,7 +1432,7 @@ class chargecontrol extends utils.Adapter {
         if (this.adapterIntervalTimer[key]) {
             clearInterval(this.adapterIntervalTimer[key]);
             this.adapterIntervalTimer[key] = null;
-            this.log.info(`[Interval]: Cleared interval for ${key}`);
+            this.log.info(`[Interval]: Cleared interval for '${key}'!`);
         }
     }
 
