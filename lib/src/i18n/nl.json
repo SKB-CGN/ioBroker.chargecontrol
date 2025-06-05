@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Het laadproces voor %s met de modus %s is afgebroken!",
+    "charge_start": "Het laadproces voor %s met de modus %s is gestart!",
+    "charge_finished": "Het laadproces voor %s met de modus %s is voltooid!",
+    "charge_limit": "Oplaadlimiet: %s",
+    "wallbox_power": "Wallbox-vermogen: %sA",
+    "charge_power": "Op te laden energie: %sWh",
+    "charged_power": "Opgeladen energie: %sWh",
+    "current_soc": "Huidige soc: %s%",
+    "duration": "Duur: %s Min.",
+    "estimated_duration": "Geschatte duur: %s Min.",
+    "chargeMode_0": "Gedeactiveerd",
+    "chargeMode_1": "Handmatig",
+    "chargeMode_2": "Enige overschot",
+    "chargeMode_3": "Minimaal + overschot",
+    "chargeMode_4": "Snel"
+}

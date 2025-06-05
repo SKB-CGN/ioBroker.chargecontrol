@@ -132,7 +132,7 @@
 		function setTableState(state, value) {
 			// Set the Value
 			const $dest = $(`#elm_${state}`);
-			if ($dest.is(':not(:input)')) {
+			if ($dest.is(':not(:input, select)')) {
 
 				// Set the color only for true/false
 				if (value === true) {
@@ -146,8 +146,8 @@
 				}
 
 				// Car connected
-				if (state == 'vehicleName') {
-					if (value == 'No car connected!') {
+				if (state == 'vehicle') {
+					if (value == 'No car connected') {
 						$dest.text(translateWord('tab_value_no_car')).addClass('grey-text').removeClass('green-text orange-text');
 					}
 
@@ -176,8 +176,28 @@
 			}
 		}
 
+		function receiveCars() {
+			return new Promise((resolve, reject) => {
+				socket.emit('getObject', `${adapter}.${instance}.control.vehicle`, function (err, res) {
+					if (!err && res) {
+						console.log(res);
+						// Build select List
+						$("#vehicle").empty();
+						Object.keys(res.common.states).forEach(key => {
+							$("#vehicle").append('<option value="' + key + '">' + key + '</option>');
+						});
+						$('select').select();
+					} else {
+						reject('');
+					}
+				});
+			});
+		}
 
-		function readStates() {
+
+		async function readStates() {
+			// Get the car list
+			await receiveCars();
 			console.log("Read the states for: " + adapter + ' ' + instance);
 			socket.emit('getStates', `${adapter}.${instance}.*`, function (err, _states) {
 				if (err) {
@@ -236,8 +256,7 @@
 							<tr>
 								<td><i class="material-icons">directions_car</i></td>
 								<td class="translate" data-lang="tab_vehicleName">Vehicle connected to wallbox</td>
-								<td id="elm_vehicleName"></td>
-								<td>&nbsp;</td>
+								<td colspan="2"><select id="vehicle" class="changeValue"></select></td>
 							</tr>
 							<tr>
 								<td><i class="material-icons">battery_charging_full</i></td>
