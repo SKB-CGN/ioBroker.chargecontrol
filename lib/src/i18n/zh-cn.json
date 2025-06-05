@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "模式为 %s 的 %s 充电过程已中止！",
+    "charge_start": "模式为 %s 的 %s 充电过程已开始！",
+    "charge_finished": "模式为 %s 的 %s 充电过程已完成！",
+    "charge_limit": "充电限额：%s",
+    "wallbox_power": "壁箱电源：%sA",
+    "charge_power": "充电电量：%sWh",
+    "charged_power": "充电能量：%sWh",
+    "current_soc": "当前社会地位：%s%",
+    "duration": "持续时间：%s 分钟",
+    "estimated_duration": "预计持续时间：%s 分钟",
+    "chargeMode_0": "已停用",
+    "chargeMode_1": "手动",
+    "chargeMode_2": "仅有剩余",
+    "chargeMode_3": "最小+剩余",
+    "chargeMode_4": "快速地"
+}

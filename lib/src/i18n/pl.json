@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Proces ładowania %s w trybie %s został przerwany!",
+    "charge_start": "Rozpoczęto proces ładowania %s w trybie %s!",
+    "charge_finished": "Proces ładowania %s w trybie %s został zakończony!",
+    "charge_limit": "Limit ładowania: %s",
+    "wallbox_power": "Zasilanie stacji Wallbox: %sA",
+    "charge_power": "Energia do naładowania: %sWh",
+    "charged_power": "Naładowana energia: %sWh",
+    "current_soc": "Obecny klub: %s%",
+    "duration": "Czas trwania: %s Min.",
+    "estimated_duration": "Szacowany czas trwania: %s Min.",
+    "chargeMode_0": "Dezaktywowane",
+    "chargeMode_1": "Ręcznie",
+    "chargeMode_2": "Tylko nadwyżka",
+    "chargeMode_3": "Minimalne + Nadwyżka",
+    "chargeMode_4": "Szybko"
+}

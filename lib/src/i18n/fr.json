@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Le processus de chargement de %s avec le mode %s a été interrompu !",
+    "charge_start": "Le processus de chargement de %s avec le mode %s a été lancé !",
+    "charge_finished": "Le processus de chargement de %s avec le mode %s est terminé !",
+    "charge_limit": "Limite de charge : %s",
+    "wallbox_power": "Alimentation de la boîte murale : %sA",
+    "charge_power": "Énergie à recharger : %sWh",
+    "charged_power": "Énergie chargée : %sWh",
+    "current_soc": "Société actuelle : %s%",
+    "duration": "Durée : %s minutes.",
+    "estimated_duration": "Durée estimée : %s Mins.",
+    "chargeMode_0": "Désactivé",
+    "chargeMode_1": "Manuellement",
+    "chargeMode_2": "Seulement-excédent",
+    "chargeMode_3": "Minime + Excédent",
+    "chargeMode_4": "Rapide"
+}

@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Процес зарядки %s у режимі %s перервано!",
+    "charge_start": "Розпочато процес зарядки %s у режимі %s!",
+    "charge_finished": "Процес зарядки %s у режимі %s завершено!",
+    "charge_limit": "Обмеження заряду: %s",
+    "wallbox_power": "Живлення Wallbox: %sA",
+    "charge_power": "Енергія, яку потрібно зарядити: %sWh",
+    "charged_power": "Заряджена енергія: %sWh",
+    "current_soc": "Поточний Soc: %s%",
+    "duration": "Тривалість: %s хв.",
+    "estimated_duration": "Приблизна тривалість: %s хв.",
+    "chargeMode_0": "Деактивовано",
+    "chargeMode_1": "Вручну",
+    "chargeMode_2": "Тільки-Лишки",
+    "chargeMode_3": "Мінімум + надлишок",
+    "chargeMode_4": "швидко"
+}
