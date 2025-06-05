@@ -1,0 +1,17 @@
+{
+    "charge_aborted": "Il processo di ricarica per %s con la modalità %s è stato interrotto!",
+    "charge_start": "Il processo di ricarica per %s con la modalità %s è stato avviato!",
+    "charge_finished": "Il processo di ricarica per %s con la modalità %s è stato completato!",
+    "charge_limit": "Limite di ricarica: %s",
+    "wallbox_power": "Potenza della scatola a muro: %sA",
+    "charge_power": "Energia da caricare: %sWh",
+    "charged_power": "Energia caricata: %sWh",
+    "current_soc": "Soc. attuale: %s%",
+    "duration": "Durata: %s min.",
+    "estimated_duration": "Durata stimata: %s Min.",
+    "chargeMode_0": "Disattivato",
+    "chargeMode_1": "Manualmente",
+    "chargeMode_2": "Solo eccedenza",
+    "chargeMode_3": "Minimo + Eccedenza",
+    "chargeMode_4": "Veloce"
+}

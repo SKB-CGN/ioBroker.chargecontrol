@@ -1,310 +1,1194 @@
 {
-	"common": {
-		"name": "chargecontrol",
-		"version": "0.0.1",
-		"news": {
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "первоначальный выпуск",
-				"pt": "lançamento inicial",
-				"nl": "eerste release",
-				"fr": "version initiale",
-				"it": "rilascio iniziale",
-				"es": "lanzamiento inicial",
-				"pl": "pierwsze wydanie",
-				"uk": "початковий випуск",
-				"zh-cn": "初始版本"
-			}
-		},
-		"titleLang": {
-			"en": "Charge Control",
-			"de": "Ladekontrolle",
-			"ru": "Контроль заряда",
-			"pt": "Controle de carga",
-			"nl": "Laadcontrole",
-			"fr": "Contrôle des charges",
-			"it": "Controllo della carica",
-			"es": "Control de carga",
-			"pl": "Kontrola ładowania",
-			"uk": "Контроль заряду",
-			"zh-cn": "充电控制"
-		},
-		"desc": {
-			"en": "This adapter allows you in a simple way, to control your Wallbox and the vehicle to be charged! Even with surplus if configured!",
-			"de": "Mit diesem Adapter können Sie auf einfache Weise Ihre Wallbox und das zu ladende Fahrzeug steuern! Sogar mit Überschuss, wenn konfiguriert!",
-			"ru": "Этот адаптер позволяет вам легко управлять Wallbox и заряжаемым автомобилем! Даже с излишком, если настроено!",
-			"pt": "Este adaptador permite-lhe, de forma simples, controlar a sua Wallbox e o veículo a carregar! Mesmo com excedente se configurado!",
-			"nl": "Met deze adapter kunt u op een eenvoudige manier uw Wallbox en het op te laden voertuig bedienen! Zelfs met overschot indien geconfigureerd!",
-			"fr": "Cet adaptateur vous permet de manière simple, de contrôler votre Wallbox et le véhicule à recharger ! Même avec surplus si configuré !",
-			"it": "Questo adattatore ti permette in modo semplice di controllare la tua Wallbox e il veicolo da ricaricare! Anche con surplus se configurato!",
-			"es": "¡Este adaptador te permite controlar de forma sencilla tu Wallbox y el vehículo a cargar! ¡Incluso con excedente si está configurado!",
-			"pl": "Za pomocą tego adaptera możesz w prosty sposób sterować Wallboxem i ładowanym pojazdem! Nawet z nadwyżką, jeśli jest skonfigurowana!",
-			"uk": "За допомогою цього адаптера ви можете легко керувати пристроєм Wallbox і транспортним засобом, який потрібно зарядити! Навіть із надлишком, якщо налаштовано!",
-			"zh-cn": "该适配器可让您以简单的方式控制您的 Wallbox 和要充电的车辆！即使配置有剩余！"
-		},
-		"authors": [
-			"SKB <info@skb-web.de>"
-		],
-		"keywords": [
-			"pv",
-			"power",
-			"wallbox",
-			"vehicle",
-			"charge",
-			"control"
-		],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "chargecontrol.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.png",
-		"readme": "https://github.com/SKB-CGN/ioBroker.chargecontrol/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "logic",
-		"compact": true,
-		"connectionType": "local",
-		"messagebox": true,
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json",
-			"tab": "materialize"
-		},
-		"adminTab": {
-			"singleton": false,
-			"name": {
-				"en": "ChargeControl"
-			},
-			"link": ""
-		},
-		"supportCustoms": false,
-		"eraseOnUpload": true,
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=5.1.13"
-			}
-		]
-	},
-	"native": {
-		"surplus_id": "",
-		"surplus_option": false,
-		"surplus_positive": false,
-		"wallbox_start": "",
-		"wallbox_stop": "",
-		"wallbox_power": "",
-		"wallbox_connected": "",
-		"wallbox_ampere_max": 32,
-		"wallbox_ampere_min": 6,
-		"timeout_start": 600,
-		"timeout_stop": 600,
-		"timeout_protection": 300,
-		"timeout_car": 120,
-		"timeout_power": 60,
-		"notificationEnable": false,
-		"notificationsType": "Telegram",
-		"telegramInstance": "telegram.0",
-		"emailInstance": "email.0",
-		"telegramRecipient": "",
-		"resetFinished": false,
-		"telegramSilentNotice": false
-	},
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "control",
-			"type": "channel",
-			"common": {
-				"name": "Control Settings of ChargeControl"
-			},
-			"native": {}
-		},
-		{
-			"_id": "control.mode",
-			"type": "state",
-			"common": {
-				"name": "Mode",
-				"desc": "Mode for controlling the start of charge",
-				"type": "number",
-				"role": "indicator",
-				"read": true,
-				"write": true,
-				"def": 0,
-				"states": {
-					"0": "Deactivated",
-					"1": "Only Surplus",
-					"2": "Minimal + Surplus",
-					"3": "Fast"
-				}
-			},
-			"native": {}
-		},
-		{
-			"_id": "control.chargeLimit",
-			"type": "state",
-			"common": {
-				"name": "Charge Limit",
-				"desc": "Charge Limit in Percent of the car",
-				"type": "number",
-				"role": "value.battery",
-				"read": true,
-				"write": true,
-				"def": 100,
-				"unit": "%",
-				"min": 0,
-				"max": 100
-			},
-			"native": {}
-		},
-		{
-			"_id": "control.chargeAmpere",
-			"type": "state",
-			"common": {
-				"name": "Charge Ampere",
-				"desc": "Charge Ampere to use for the Wallbox",
-				"type": "number",
-				"role": "value.current",
-				"read": true,
-				"write": true,
-				"def": 6,
-				"unit": "A"
-			},
-			"native": {}
-		},
-		{
-			"_id": "control.startGuestCharge",
-			"type": "state",
-			"common": {
-				"name": "Start charge session for a guest car/unknown car",
-				"desc": "This state is to allow to starte the session, if an unknown car is connected",
-				"type": "boolean",
-				"role": "button",
-				"read": true,
-				"write": true
-			},
-			"native": {}
-		},
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Info about charging details"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.chargeRemainingDuration",
-			"type": "state",
-			"common": {
-				"name": "Remaining Duration",
-				"desc": "Remaining Minutes of current charge process",
-				"type": "number",
-				"role": "level.timer.sleep",
-				"read": true,
-				"write": false,
-				"def": 0,
-				"unit": "Minutes"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.vehicleName",
-			"type": "state",
-			"common": {
-				"name": "Name of Vehicle",
-				"desc": "Name of the Vehicle currently charging, or empty if no vehicle is connected.",
-				"type": "string",
-				"role": "text",
-				"read": true,
-				"write": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.vehicleSoc",
-			"type": "state",
-			"common": {
-				"name": {
-					"en": "Vehicle State of charge"
-				},
-				"desc": "State of charge of the Vehicle currently charging",
-				"type": "number",
-				"role": "value.battery",
-				"read": true,
-				"write": false,
-				"unit": "%",
-				"def": 0,
-				"min": 0,
-				"max": 100
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.charging",
-			"type": "state",
-			"common": {
-				"name": "Indicate charging",
-				"desc": "Indicates if charging is active",
-				"type": "boolean",
-				"role": "indicator.working",
-				"def": false,
-				"read": true,
-				"write": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.chargingCompleted",
-			"type": "state",
-			"common": {
-				"name": "Indicate charging completed",
-				"desc": "Indicates if charging is completed or",
-				"type": "boolean",
-				"role": "indicator",
-				"def": false,
-				"read": true,
-				"write": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.chargeRemainingPercent",
-			"type": "state",
-			"common": {
-				"name": "Remaining percent of energy",
-				"desc": "Remaining percent of energy to charge into the car",
-				"type": "number",
-				"role": "value.battery",
-				"read": true,
-				"write": false,
-				"def": 0,
-				"unit": "%"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.chargeRemainingPower",
-			"type": "state",
-			"common": {
-				"name": "Remaining power to charge",
-				"desc": "Remaining power to charge into the car",
-				"type": "number",
-				"role": "value.energy.activ",
-				"read": true,
-				"write": false,
-				"def": 0,
-				"unit": "Wh"
-			},
-			"native": {}
-		}
-	]
+    "common": {
+        "name": "chargecontrol",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "первоначальный выпуск",
+                "pt": "lançamento inicial",
+                "nl": "eerste release",
+                "fr": "version initiale",
+                "it": "rilascio iniziale",
+                "es": "lanzamiento inicial",
+                "pl": "pierwsze wydanie",
+                "uk": "початковий випуск",
+                "zh-cn": "初始版本"
+            }
+        },
+        "titleLang": {
+            "en": "Charge Control",
+            "de": "Ladekontrolle",
+            "ru": "Контроль заряда",
+            "pt": "Controle de carga",
+            "nl": "Laadcontrole",
+            "fr": "Contrôle des charges",
+            "it": "Controllo della carica",
+            "es": "Control de carga",
+            "pl": "Kontrola ładowania",
+            "uk": "Контроль заряду",
+            "zh-cn": "充电控制"
+        },
+        "desc": {
+            "en": "This adapter allows you in a simple way, to control your Wallbox and the vehicle to be charged! Even with surplus if configured!",
+            "de": "Mit diesem Adapter können Sie auf einfache Weise Ihre Wallbox und das zu ladende Fahrzeug steuern! Sogar mit Überschuss, wenn konfiguriert!",
+            "ru": "Этот адаптер позволяет вам легко управлять Wallbox и заряжаемым автомобилем! Даже с излишком, если настроено!",
+            "pt": "Este adaptador permite-lhe, de forma simples, controlar a sua Wallbox e o veículo a carregar! Mesmo com excedente se configurado!",
+            "nl": "Met deze adapter kunt u op een eenvoudige manier uw Wallbox en het op te laden voertuig bedienen! Zelfs met overschot indien geconfigureerd!",
+            "fr": "Cet adaptateur vous permet de manière simple, de contrôler votre Wallbox et le véhicule à recharger ! Même avec surplus si configuré !",
+            "it": "Questo adattatore ti permette in modo semplice di controllare la tua Wallbox e il veicolo da ricaricare! Anche con surplus se configurato!",
+            "es": "¡Este adaptador te permite controlar de forma sencilla tu Wallbox y el vehículo a cargar! ¡Incluso con excedente si está configurado!",
+            "pl": "Za pomocą tego adaptera możesz w prosty sposób sterować Wallboxem i ładowanym pojazdem! Nawet z nadwyżką, jeśli jest skonfigurowana!",
+            "uk": "За допомогою цього адаптера ви можете легко керувати пристроєм Wallbox і транспортним засобом, який потрібно зарядити! Навіть із надлишком, якщо налаштовано!",
+            "zh-cn": "该适配器可让您以简单的方式控制您的 Wallbox 和要充电的车辆！即使配置有剩余！"
+        },
+        "authors": [
+            "SKB <info@skb-web.de>"
+        ],
+        "keywords": [
+            "pv",
+            "power",
+            "wallbox",
+            "vehicle",
+            "charge",
+            "control"
+        ],
+        "licenseInformation": {
+            "type": "free",
+            "license": "MIT"
+        },
+        "platform": "Javascript/Node.js",
+        "icon": "chargecontrol.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/SKB-CGN/ioBroker.chargecontrol/main/admin/chargecontrol.png",
+        "readme": "https://github.com/SKB-CGN/ioBroker.chargecontrol/blob/main/README.md",
+        "loglevel": "info",
+        "tier": 3,
+        "mode": "daemon",
+        "type": "logic",
+        "compact": true,
+        "connectionType": "local",
+        "messagebox": true,
+        "dataSource": "poll",
+        "adminUI": {
+            "config": "json",
+            "tab": "json"
+        },
+        "adminTab": {
+            "link": "jsonTab.json",
+            "singleton": false,
+            "name": {
+                "en": "ChargeControl",
+                "de": "Ladesteuerung",
+                "ru": "ChargeControl",
+                "pt": "Controle de Carga",
+                "nl": "ChargeControl",
+                "fr": "Contrôle de charge",
+                "it": "ChargeControl",
+                "es": "ChargeControl",
+                "pl": "ChargeControl",
+                "uk": "Партнерство",
+                "zh-cn": "充电控制"
+            }
+        },
+        "supportCustoms": false,
+        "eraseOnUpload": true,
+        "dependencies": [
+            {
+                "js-controller": ">=6.0.11"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.13"
+            }
+        ]
+    },
+    "protectedNative": [
+        "account_password",
+        "account_pin"
+    ],
+    "encryptedNative": [
+        "account_password",
+        "account_pin"
+    ],
+    "native": {
+        "battery_id": "",
+        "battery_soc": "",
+        "battery_option": false,
+        "battery_positive": false,
+        "surplus_id": "",
+        "surplus_option": false,
+        "surplus_positive": false,
+        "wallbox_ampere_max": 32,
+        "wallbox_ampere_min": 6,
+        "timeout_start": 300,
+        "timeout_stop": 300,
+        "timeout_protection": 300,
+        "timeout_power": 60,
+        "notificationEnable": false,
+        "account_email": "",
+        "account_password": "",
+        "account_pin": "",
+        "notificationsType": "Telegram",
+        "telegramInstance": "telegram.0",
+        "emailInstance": "email.0",
+        "telegramRecipient": "",
+        "resetFinished": false,
+        "telegramSilentNotice": false,
+        "ocpp_port": 10116,
+        "ocpp_enable": false,
+        "ocpp_noCarUpdate": false
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "ocpp",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "OCPP Details",
+                    "de": "OCPP Details",
+                    "ru": "OCPP Подробности",
+                    "pt": "OCPP Detalhes",
+                    "nl": "OCPP Gegevens",
+                    "fr": "OCPP Détails",
+                    "it": "OCSE Dettagli",
+                    "es": "OCPP Detalles",
+                    "pl": "OCPP Szczegóły",
+                    "uk": "ОКПП Детальніше",
+                    "zh-cn": "办事处 细节"
+                },
+                "color": null,
+                "statusStates": {
+                    "onlineId": "connected"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.session",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Session charging power",
+                    "de": "Ladeleistung der Sitzung",
+                    "ru": "Мощность зарядки сеанса",
+                    "pt": "Potência de carregamento da sessão",
+                    "nl": "Sessie laadvermogen",
+                    "fr": "Puissance de charge de la session",
+                    "it": "Potenza di carica della sessione",
+                    "es": "Potencia de carga de la sesión",
+                    "pl": "Moc ładowania sesji",
+                    "uk": "Потужність сеансу заряджання",
+                    "zh-cn": "Session charging power"
+                },
+                "desc": {
+                    "en": "Current charging power of the charging session",
+                    "de": "Aktuelle Ladeleistung des Ladevorgangs",
+                    "ru": "Текущая мощность зарядки в сеансе зарядки",
+                    "pt": "Potência de carga atual da sessão de carregamento",
+                    "nl": "Huidig laadvermogen van de laadsessie",
+                    "fr": "Puissance de charge actuelle de la session de charge",
+                    "it": "Potenza di carica attuale della sessione di carica",
+                    "es": "Potencia de carga actual de la sesión de carga",
+                    "pl": "Aktualna moc ładowania podczas sesji ładowania",
+                    "uk": "Поточна потужність заряджання під час сеансу заряджання",
+                    "zh-cn": "Current charging power of the charging session"
+                },
+                "type": "number",
+                "role": "value.power.active",
+                "read": true,
+                "write": false,
+                "unit": "Wh",
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.current",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Charging current",
+                    "de": "Ladestrom",
+                    "ru": "Ток зарядки",
+                    "pt": "Corrente de carga",
+                    "nl": "Laadstroom",
+                    "fr": "Courant de charge",
+                    "it": "Corrente di carica",
+                    "es": "Corriente de carga",
+                    "pl": "Prąd ładowania",
+                    "uk": "Зарядний струм",
+                    "zh-cn": "Charging current"
+                },
+                "desc": {
+                    "en": "Provided current of the wallbox",
+                    "de": "Bereitgestellter Strom der Wallbox",
+                    "ru": "Предусмотренный ток настенного ящика",
+                    "pt": "Corrente fornecida da Wallbox",
+                    "nl": "Geleverde stroom van de wallbox",
+                    "fr": "Courant fourni par la wallbox",
+                    "it": "Corrente fornita dalla wallbox",
+                    "es": "Corriente suministrada de la Wallbox",
+                    "pl": "Prąd dostarczany przez stację ładowania",
+                    "uk": "Забезпечений струм зарядного пристрою",
+                    "zh-cn": "Provided current of the wallbox"
+                },
+                "type": "number",
+                "role": "value.current",
+                "read": true,
+                "write": false,
+                "unit": "A",
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.power",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Power of charging",
+                    "de": "Leistung der Aufladung",
+                    "ru": "Мощность зарядки",
+                    "pt": "Potência de carga",
+                    "nl": "Oplaadvermogen",
+                    "fr": "Puissance de charge",
+                    "it": "Potenza di carica",
+                    "es": "Poder de carga",
+                    "pl": "Moc ładowania",
+                    "uk": "Потужність зарядки",
+                    "zh-cn": "Power of charging"
+                },
+                "desc": {
+                    "en": "Current charging power of the wallbox",
+                    "de": "Aktuelle Ladeleistung der Wallbox",
+                    "ru": "Текущая мощность зарядки настенного блока",
+                    "pt": "Potência de carga atual da Wallbox",
+                    "nl": "Huidig laadvermogen van de wallbox",
+                    "fr": "Puissance de charge actuelle de la wallbox",
+                    "it": "Potenza di carica attuale della wallbox",
+                    "es": "Potencia de carga actual de la Wallbox",
+                    "pl": "Aktualna moc ładowania stacji ładowania Wallbox",
+                    "uk": "Поточна потужність заряджання зарядного пристрою",
+                    "zh-cn": "Current charging power of the wallbox"
+                },
+                "type": "number",
+                "role": "value.power.active",
+                "read": true,
+                "write": false,
+                "unit": "W",
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.transactionId",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Transaction ID",
+                    "de": "Transaktions-ID",
+                    "ru": "Идентификатор транзакции",
+                    "pt": "ID da transação",
+                    "nl": "Transactie-ID",
+                    "fr": "ID de la transaction",
+                    "it": "ID transazione",
+                    "es": "ID de transacción",
+                    "pl": "Identyfikator transakcji",
+                    "uk": "Ідентифікатор транзакції",
+                    "zh-cn": "Transaction ID"
+                },
+                "desc": {
+                    "en": "ID of the current transaction ",
+                    "de": "ID der aktuellen Transaktion",
+                    "ru": "Идентификатор текущей транзакции",
+                    "pt": "ID da transação atual",
+                    "nl": "ID van de huidige transactie",
+                    "fr": "ID de la transaction en cours",
+                    "it": "ID della transazione corrente",
+                    "es": "ID de la transacción actual",
+                    "pl": "Identyfikator bieżącej transakcji",
+                    "uk": "Ідентифікатор поточної транзакції",
+                    "zh-cn": "ID of the current transaction "
+                },
+                "type": "number",
+                "role": "value",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.meterStart",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Meter Start",
+                    "de": "Zähler Start",
+                    "ru": "Запуск счетчика",
+                    "pt": "Início do contador",
+                    "nl": "Meter Start",
+                    "fr": "Début du compteur",
+                    "it": "Avvio del contatore",
+                    "es": "Inicio del contador",
+                    "pl": "Uruchomienie licznika",
+                    "uk": "Запуск лічильника",
+                    "zh-cn": "Meter Start"
+                },
+                "desc": {
+                    "en": "Start of the meter",
+                    "de": "Beginn des Zählers",
+                    "ru": "Начало счетчика",
+                    "pt": "Início do contador",
+                    "nl": "Begin van de meter",
+                    "fr": "Début du compteur",
+                    "it": "Inizio del contatore",
+                    "es": "Inicio del contador",
+                    "pl": "Początek licznika",
+                    "uk": "Початок роботи лічильника",
+                    "zh-cn": "Start of the meter"
+                },
+                "type": "number",
+                "role": "value",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.meterEnd",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "End of the meter",
+                    "de": "Ende des Zählers",
+                    "ru": "Конец счетчика",
+                    "pt": "Fim do contador",
+                    "nl": "Einde van de meter",
+                    "fr": "Fin du compteur",
+                    "it": "Fine del contatore",
+                    "es": "Fin del contador",
+                    "pl": "Koniec licznika",
+                    "uk": "Кінець лічильника",
+                    "zh-cn": "End of the meter"
+                },
+                "desc": {
+                    "en": "End of the meter",
+                    "de": "Ende des Zählers",
+                    "ru": "Конец счетчика",
+                    "pt": "Fim do contador",
+                    "nl": "Einde van de meter",
+                    "fr": "Fin du compteur",
+                    "it": "Fine del contatore",
+                    "es": "Fin del contador",
+                    "pl": "Koniec licznika",
+                    "uk": "Кінець лічильника",
+                    "zh-cn": "End of the meter"
+                },
+                "type": "number",
+                "role": "value",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.status",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Status",
+                    "de": "Status",
+                    "ru": "Статус",
+                    "pt": "Estado",
+                    "nl": "Status",
+                    "fr": "Statut",
+                    "it": "Stato",
+                    "es": "Estado",
+                    "pl": "Status",
+                    "uk": "Статус",
+                    "zh-cn": "Status"
+                },
+                "desc": {
+                    "en": "Current status of wallbox",
+                    "de": "Aktueller Status der Wallbox",
+                    "ru": "Текущее состояние wallbox",
+                    "pt": "Estado atual da Wallbox",
+                    "nl": "Huidige status van wallbox",
+                    "fr": "Statut actuel de la wallbox",
+                    "it": "Stato attuale della wallbox",
+                    "es": "Estado actual de la Wallbox",
+                    "pl": "Aktualny stan wallboxa",
+                    "uk": "Поточний стан зарядного пристрою",
+                    "zh-cn": "Current status of wallbox"
+                },
+                "type": "string",
+                "role": "indicator.status",
+                "read": true,
+                "write": false,
+                "states": [
+                    "Available",
+                    "Preparing",
+                    "Charging",
+                    "SuspendedEVSE",
+                    "SuspendedEV",
+                    "Finishing",
+                    "Reserved",
+                    "Unavailable",
+                    "Faulted"
+                ]
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.connected",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "OCPP connected",
+                    "de": "OCPP angeschlossen",
+                    "ru": "OCPP подключен",
+                    "pt": "OCPP ligado",
+                    "nl": "OCPP aangesloten",
+                    "fr": "OCPP connecté",
+                    "it": "OCPP collegato",
+                    "es": "OCPP conectado",
+                    "pl": "OCPP podłączony",
+                    "uk": "Підключено OCPP",
+                    "zh-cn": "OCPP connected"
+                },
+                "desc": {
+                    "en": "Wallbox currently connected via OCPP",
+                    "de": "Wallbox derzeit über OCPP verbunden",
+                    "ru": "Настенный блок в настоящее время подключен через OCPP",
+                    "pt": "Wallbox atualmente ligada via OCPP",
+                    "nl": "Wallbox momenteel aangesloten via OCPP",
+                    "fr": "Wallbox actuellement connectée via OCPP",
+                    "it": "Wallbox attualmente collegato tramite OCPP",
+                    "es": "Wallbox actualmente conectada a través de OCPP",
+                    "pl": "Stacja Wallbox aktualnie połączona przez OCPP",
+                    "uk": "Наразі зарядний пристрій Wallbox підключено через OCPP",
+                    "zh-cn": "Wallbox currently connected via OCPP"
+                },
+                "type": "boolean",
+                "role": "indicator.status",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.carConnected",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Car connected",
+                    "de": "Auto verbunden",
+                    "ru": "Автомобиль подключен",
+                    "pt": "Carro conectado",
+                    "nl": "Auto verbonden",
+                    "fr": "Voiture connectée",
+                    "it": "Auto connesse",
+                    "es": "Coche conectado",
+                    "pl": "Połączony samochód",
+                    "uk": "Автомобіль підключений",
+                    "zh-cn": "车已连接"
+                },
+                "desc": {
+                    "en": "Indicates, if a car is connected to the wallbox",
+                    "de": "Zeigt an, ob ein Auto an die Wallbox angeschlossen ist",
+                    "ru": "Указывает, подключен ли автомобиль к настенному блоку",
+                    "pt": "Indica se um veículo está ligado à Wallbox",
+                    "nl": "Geeft aan of er een auto is aangesloten op de wallbox",
+                    "fr": "Indique si une voiture est connectée à la wallbox.",
+                    "it": "Indica se un'autovettura è collegata alla wallbox",
+                    "es": "Indica, si un coche está conectado a la Wallbox",
+                    "pl": "Wskazuje, czy samochód jest podłączony do stacji ładowania",
+                    "uk": "Показує, чи підключено автомобіль до зарядного пристрою",
+                    "zh-cn": "Indicates, if a car is connected to the wallbox"
+                },
+                "type": "boolean",
+                "role": "indicator.status",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.heartbeat",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Heartbeat",
+                    "de": "Herzschlag",
+                    "ru": "Сердцебиение",
+                    "pt": "Batimento cardíaco",
+                    "nl": "Hartslag",
+                    "fr": "Rythme cardiaque",
+                    "it": "Battito del cuore",
+                    "es": "Latido del corazón",
+                    "pl": "Bicie serca",
+                    "uk": "Серцебиття",
+                    "zh-cn": "Heartbeat"
+                },
+                "desc": {
+                    "en": "Last heartbeat of the connected client",
+                    "de": "Letzter Heartbeat des verbundenen Clients",
+                    "ru": "Последнее сердцебиение подключенного клиента",
+                    "pt": "Último batimento cardíaco do cliente ligado",
+                    "nl": "Laatste heartbeat van de verbonden client",
+                    "fr": "Dernier battement de cœur du client connecté",
+                    "it": "Ultimo battito cardiaco del client collegato",
+                    "es": "Último latido del cliente conectado",
+                    "pl": "Ostatnie uderzenie serca połączonego klienta",
+                    "uk": "Останнє серцебиття підключеного клієнта",
+                    "zh-cn": "Last heartbeat of the connected client"
+                },
+                "type": "string",
+                "role": "date",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.client",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Connected wallbox",
+                    "de": "Angeschlossene Wallbox",
+                    "ru": "Подключенная настенная коробка",
+                    "pt": "Caixa de parede ligada",
+                    "nl": "Aangesloten wallbox",
+                    "fr": "Boîte murale connectée",
+                    "it": "Scatola a muro collegata",
+                    "es": "Caja mural conectada",
+                    "pl": "Podłączona stacja ładowania",
+                    "uk": "Підключена настінна коробка",
+                    "zh-cn": "Connected wallbox"
+                },
+                "desc": {
+                    "en": "Name of the current connected client connected via OCPP",
+                    "de": "Name des aktuell verbundenen Clients, der über OCPP verbunden ist",
+                    "ru": "Имя текущего подключенного клиента, подключенного через OCPP",
+                    "pt": "Nome do atual cliente ligado através de OCPP",
+                    "nl": "Naam van de huidige verbonden client verbonden via OCPP",
+                    "fr": "Nom du client actuellement connecté via OCPP",
+                    "it": "Nome del client collegato correntemente tramite OCPP",
+                    "es": "Nombre del cliente conectado actualmente a través de OCPP",
+                    "pl": "Nazwa aktualnie podłączonego klienta połączonego przez OCPP",
+                    "uk": "Ім'я поточного підключеного клієнта, підключеного через OCPP",
+                    "zh-cn": "Name of the current connected client connected via OCPP"
+                },
+                "type": "string",
+                "role": "info.name",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.setup",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "OCPP Setup",
+                    "de": "OCPP Einrichtung",
+                    "ru": "OCPP Настройка",
+                    "pt": "OCPP Configuração",
+                    "nl": "OCPP Instellen",
+                    "fr": "OCPP Configuration",
+                    "it": "OCSE Impostazione",
+                    "es": "OCPP Configuración",
+                    "pl": "OCPP Ustawienia",
+                    "uk": "ОКПП Комплекти",
+                    "zh-cn": "办事处 设置"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.setup.completed",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Completed",
+                    "de": "Abgeschlossen",
+                    "ru": "Завершено",
+                    "pt": "Concluído",
+                    "nl": "Voltooid",
+                    "fr": "Terminé",
+                    "it": "Completato",
+                    "es": "Completado",
+                    "pl": "Zakończono",
+                    "uk": "Завершено",
+                    "zh-cn": "Completed"
+                },
+                "desc": {
+                    "en": "Wallbox Setup completed",
+                    "de": "Wallbox Setup abgeschlossen",
+                    "ru": "Настройка Wallbox завершена",
+                    "pt": "Configuração da caixa de parede concluída",
+                    "nl": "Wallbox-instellingen voltooid",
+                    "fr": "Configuration Wallbox terminée",
+                    "it": "Wallbox Setup completato",
+                    "es": "Wallbox Setup completed",
+                    "pl": "Ustawienia tapety zakończone",
+                    "uk": "Настроювання стінок завершено",
+                    "zh-cn": "墙盒设置完成"
+                },
+                "type": "boolean",
+                "role": "indicator",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.setup.identity",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Identity",
+                    "de": "Identität",
+                    "ru": "Идентификация",
+                    "pt": "Identidade",
+                    "nl": "Identiteit",
+                    "fr": "Identité",
+                    "it": "Identità",
+                    "es": "Identidad",
+                    "pl": "Tożsamość",
+                    "uk": "Історія",
+                    "zh-cn": "身份"
+                },
+                "desc": {
+                    "en": "Identity of the connected Wallbox",
+                    "de": "Identität der angeschlossenen Wallbox",
+                    "ru": "Идентификация подключенного Wallbox",
+                    "pt": "Identidade da caixa de parede conectada",
+                    "nl": "Identiteit van de verbonden Wallbox",
+                    "fr": "Identité de la Wallbox connectée",
+                    "it": "Identità del Wallbox collegato",
+                    "es": "Identidad del Wallbox conectado",
+                    "pl": "Tożsamość połączonej skrzynki na listy",
+                    "uk": "Ідентифікація підключеної стіни",
+                    "zh-cn": "连接的墙箱的身份"
+                },
+                "type": "string",
+                "role": "text",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "ocpp.setup.MeterValues",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Meter Values",
+                    "de": "Zählerwerte",
+                    "ru": "Значения счетчиков",
+                    "pt": "Valores do contador",
+                    "nl": "Meterwaarden",
+                    "fr": "Valeurs des compteurs",
+                    "it": "Valori del contatore",
+                    "es": "Valores del contador",
+                    "pl": "Wartości miernika",
+                    "uk": "Значення лічильників",
+                    "zh-cn": "Meter Values"
+                },
+                "desc": {
+                    "en": "Requested and supported meter values from the wallbox",
+                    "de": "Angeforderte und unterstützte Zählerwerte von der Wallbox",
+                    "ru": "Запрашиваемые и поддерживаемые значения счетчиков из настенного блока",
+                    "pt": "Valores de contadores solicitados e suportados pela Wallbox",
+                    "nl": "Opgevraagde en ondersteunde meterwaarden van de wallbox",
+                    "fr": "Valeurs de compteur demandées et prises en charge par la wallbox",
+                    "it": "Valori del contatore richiesti e supportati dalla wallbox",
+                    "es": "Valores de contador solicitados y admitidos por la Wallbox",
+                    "pl": "Żądane i obsługiwane wartości liczników ze stacji Wallbox",
+                    "uk": "Запитувані та підтримувані значення лічильників з настінної коробки",
+                    "zh-cn": "Requested and supported meter values from the wallbox"
+                },
+                "type": "string",
+                "role": "json",
+                "read": true,
+                "write": false,
+                "def": "[]"
+            },
+            "native": {}
+        },
+        {
+            "_id": "car",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Information about the car",
+                    "de": "Informationen über das Fahrzeug",
+                    "ru": "Информация об автомобиле",
+                    "pt": "Informações sobre o automóvel",
+                    "nl": "Informatie over de auto",
+                    "fr": "Informations sur la voiture",
+                    "it": "Informazioni sull'auto",
+                    "es": "Información sobre el coche",
+                    "pl": "Informacje o samochodzie",
+                    "uk": "Інформація про автомобіль",
+                    "zh-cn": "Information about the car"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "car.soc",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Car SoC",
+                    "de": "Auto-SoC",
+                    "ru": "Автомобильные SoC",
+                    "pt": "SoC para automóveis",
+                    "nl": "Auto SoC",
+                    "fr": "SoC automobile",
+                    "it": "SoC per auto",
+                    "es": "SoC para automóviles",
+                    "pl": "Samochodowy SoC",
+                    "uk": "Автомобільна мікросхема",
+                    "zh-cn": "Car SoC"
+                },
+                "desc": {
+                    "en": "Current SoC of the car",
+                    "de": "Aktueller SoC des Fahrzeugs",
+                    "ru": "Текущая SoC автомобиля",
+                    "pt": "SoC atual do automóvel",
+                    "nl": "Huidige SoC van de auto",
+                    "fr": "SoC actuel de la voiture",
+                    "it": "SoC attuale dell'auto",
+                    "es": "SoC actual del coche",
+                    "pl": "Aktualny SoC samochodu",
+                    "uk": "Поточна SoC автомобіля",
+                    "zh-cn": "Current SoC of the car"
+                },
+                "type": "number",
+                "role": "value.battery",
+                "read": true,
+                "write": false,
+                "def": 0,
+                "unit": "%"
+            },
+            "native": {}
+        },
+        {
+            "_id": "car.soc-12V",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Car 12V SoC",
+                    "de": "Auto 12V SoC",
+                    "ru": "Автомобильная 12-вольтовая SoC",
+                    "pt": "SoC de 12V para automóvel",
+                    "nl": "Auto 12V SoC",
+                    "fr": "SoC 12V pour voiture",
+                    "it": "SoC a 12 V per auto",
+                    "es": "Coche 12V SoC",
+                    "pl": "Samochodowy SoC 12V",
+                    "uk": "Автомобільна 12В SoC",
+                    "zh-cn": "Car 12V SoC"
+                },
+                "desc": {
+                    "en": "Current 12V SoC of the car",
+                    "de": "Aktuelles 12V SoC des Fahrzeugs",
+                    "ru": "Текущая 12-вольтовая SoC автомобиля",
+                    "pt": "SoC de 12V atual do automóvel",
+                    "nl": "Huidige 12V SoC van de auto",
+                    "fr": "SoC 12V actuel de la voiture",
+                    "it": "SoC attuale a 12 V dell'auto",
+                    "es": "SoC 12V actual del coche",
+                    "pl": "Aktualny SoC 12V samochodu",
+                    "uk": "Струм 12В SoC автомобіля",
+                    "zh-cn": "Current 12V SoC of the car"
+                },
+                "type": "number",
+                "role": "value.battery",
+                "read": true,
+                "write": false,
+                "def": 0,
+                "unit": "%"
+            },
+            "native": {}
+        },
+        {
+            "_id": "car.remaining",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Remaining charging time",
+                    "de": "Verbleibende Ladezeit",
+                    "ru": "Оставшееся время зарядки",
+                    "pt": "Tempo de carregamento restante",
+                    "nl": "Resterende oplaadtijd",
+                    "fr": "Temps de charge restant",
+                    "it": "Tempo di ricarica rimanente",
+                    "es": "Tiempo de carga restante",
+                    "pl": "Pozostały czas ładowania",
+                    "uk": "Час заряджання, що залишився",
+                    "zh-cn": "Remaining charging time"
+                },
+                "desc": "",
+                "type": "string",
+                "role": "text",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "control",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Control charge settings",
+                    "de": "Steuerung der Ladeeinstellungen",
+                    "ru": "Настройка контроля",
+                    "pt": "Controlar configurações de carga",
+                    "nl": "Instellingen voor de controlelast",
+                    "fr": "Réglages des charges de contrôle",
+                    "it": "Impostazioni di controllo",
+                    "es": "Ajustes de carga de control",
+                    "pl": "Ustawienia ładowania sterującego",
+                    "uk": "Налаштування контрольного заряду",
+                    "zh-cn": "控制电荷设置"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.mode",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Mode",
+                    "de": "Modus",
+                    "ru": "Режим",
+                    "pt": "Modo",
+                    "nl": "Modus",
+                    "fr": "Mode",
+                    "it": "Modalità",
+                    "es": "Modo",
+                    "pl": "Tryb",
+                    "uk": "Режими",
+                    "zh-cn": "模式"
+                },
+                "desc": {
+                    "en": "Control the charging",
+                    "de": "Steuerung des Ladevorgangs",
+                    "ru": "Управление зарядкой",
+                    "pt": "Controlar o carregamento",
+                    "nl": "Controle van de heffing",
+                    "fr": "Contrôler la charge",
+                    "it": "Controllare la ricarica",
+                    "es": "Controla la carga",
+                    "pl": "Kontrola ładowania",
+                    "uk": "Контроль зарядки",
+                    "zh-cn": "控制充电"
+                },
+                "type": "number",
+                "role": "indicator",
+                "read": true,
+                "write": true,
+                "def": 0,
+                "states": {
+                    "0": "Deactivated",
+                    "1": "Manual",
+                    "2": "Only Surplus",
+                    "3": "Minimal + Surplus",
+                    "4": "Fast"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.homeBatteryLimit",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Home Battery Limit"
+                },
+                "desc": {
+                    "en": "Charging limit of the home battery"
+                },
+                "type": "number",
+                "role": "value.battery",
+                "read": true,
+                "write": true,
+                "unit": "%",
+                "def": 100,
+                "min": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.chargeCurrent",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Charge current",
+                    "de": "Ladestrom",
+                    "ru": "Зарядный ток",
+                    "pt": "Corrente de carga",
+                    "nl": "Laadstroom",
+                    "fr": "Charge courante",
+                    "it": "Corrente di carica",
+                    "es": "Corriente de carga",
+                    "pl": "Prąd ładowania",
+                    "uk": "Строк заряду",
+                    "zh-cn": "充电当前"
+                },
+                "desc": {
+                    "en": "Charge current to use for the wallbox",
+                    "de": "Ladestrom für die Wallbox",
+                    "ru": "Зарядный ток для использования для настенного ящика",
+                    "pt": "Carregar corrente para usar para a caixa de parede",
+                    "nl": "Te gebruiken stroom voor de wandkast",
+                    "fr": "Charger le courant à utiliser pour la boîte murale",
+                    "it": "Corrente di carica da usare per la parete",
+                    "es": "Carga de corriente para utilizar para el cuadro de pared",
+                    "pl": "Prąd ładowania do zastosowania do tapety",
+                    "uk": "Строк заряду для використання для настінної коробки",
+                    "zh-cn": "充电电流用于壁盒"
+                },
+                "type": "number",
+                "role": "value.current",
+                "read": true,
+                "write": true,
+                "def": 6,
+                "unit": "A"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Charging session details",
+                    "de": "Details zur Ladesitzung",
+                    "ru": "Информация о сеансе зарядки",
+                    "pt": "Detalhes da sessão de carregamento",
+                    "nl": "Details oplaadsessie",
+                    "fr": "Détails de la session de chargement",
+                    "it": "Dettagli della sessione di ricarica",
+                    "es": "Detalles de la sesión de carga",
+                    "pl": "Szczegóły sesji ładowania",
+                    "uk": "Детальна інформація про сеанс зарядки",
+                    "zh-cn": "Charging session details"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.duration",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Charging duration",
+                    "de": "Ladedauer",
+                    "ru": "Длительность зарядки",
+                    "pt": "Duração de carregamento",
+                    "nl": "Oplaadduur",
+                    "fr": "Durée de charge",
+                    "it": "Durata di carica",
+                    "es": "Duración de la carga",
+                    "pl": "Czas ładowania",
+                    "uk": "Тривалість зарядки",
+                    "zh-cn": "充电期限"
+                },
+                "desc": {
+                    "en": "Charging duration of current charge process",
+                    "de": "Ladedauer des aktuellen Ladevorgangs",
+                    "ru": "Срок зарядки текущего процесса зарядки",
+                    "pt": "Duração de carregamento do processo de carga atual",
+                    "nl": "Laadduur van het huidige laadproces",
+                    "fr": "Durée de charge du processus de charge actuel",
+                    "it": "Durata di carica del processo di carica corrente",
+                    "es": "Duración de carga del proceso de carga actual",
+                    "pl": "Czas ładowania bieżącego procesu ładowania",
+                    "uk": "Тривалість зарядки поточного процесу",
+                    "zh-cn": "目前收费过程的收费期限"
+                },
+                "type": "string",
+                "role": "text",
+                "read": true,
+                "write": false,
+                "def": "00:00:00"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.charging",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Charging",
+                    "de": "Aufladen",
+                    "ru": "Заряд",
+                    "pt": "Carregamento",
+                    "nl": "Opladen",
+                    "fr": "Chargement",
+                    "it": "Ricarica",
+                    "es": "Carga",
+                    "pl": "Ładowanie",
+                    "uk": "Зареєструватися",
+                    "zh-cn": "充电"
+                },
+                "desc": {
+                    "en": "Indicates if charging is active",
+                    "de": "Gibt an, ob das Laden aktiv ist",
+                    "ru": "Указывает, активна ли зарядка",
+                    "pt": "Indica se o carregamento está ativo",
+                    "nl": "Geeft aan of het laden actief is",
+                    "fr": "Indique si la charge est active",
+                    "it": "Indica se la ricarica è attiva",
+                    "es": "Indica si la carga es activa",
+                    "pl": "Wskazuje, czy ładowanie jest aktywne",
+                    "uk": "Індикатори, якщо зарядка активна",
+                    "zh-cn": "显示充电是否有效"
+                },
+                "type": "boolean",
+                "role": "indicator.working",
+                "def": false,
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.finished",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Charging completed",
+                    "de": "Aufladen abgeschlossen",
+                    "ru": "Завершение",
+                    "pt": "Carregamento concluído",
+                    "nl": "Opladen voltooid",
+                    "fr": "Chargement terminé",
+                    "it": "Ricarica completata",
+                    "es": "Carga completa",
+                    "pl": "Zakończono ładowanie",
+                    "uk": "Зарядка завершено",
+                    "zh-cn": "充电完成"
+                },
+                "desc": {
+                    "en": "Indicates if charging is finished",
+                    "de": "Gibt an, ob die Ladung beendet ist",
+                    "ru": "Указатели, если зарядка завершена",
+                    "pt": "Indica se o carregamento é terminado",
+                    "nl": "Geeft aan of het laden is voltooid",
+                    "fr": "Indique si le chargement est terminé",
+                    "it": "Indica se la ricarica è terminata",
+                    "es": "Indica si la carga está terminada",
+                    "pl": "Wskazuje, czy ładowanie jest zakończone",
+                    "uk": "Індикатори, якщо заряд завершено",
+                    "zh-cn": "显示充电是否完成"
+                },
+                "type": "boolean",
+                "role": "indicator",
+                "def": false,
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.surplusStart",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Surplus Start",
+                    "de": "Überschuss Start",
+                    "ru": "Избыток Начало",
+                    "pt": "Início do excedente",
+                    "nl": "Overschot Start",
+                    "fr": "Excédent Démarrage",
+                    "it": "Inizio eccedenza",
+                    "es": "Excedente Inicio",
+                    "pl": "Nadwyżka na starcie",
+                    "uk": "Надлишковий старт",
+                    "zh-cn": "Surplus Start"
+                },
+                "desc": {
+                    "en": "Start charging with surplus",
+                    "de": "Beginn der Aufladung mit Überschuss",
+                    "ru": "Начните заряжаться с избытком",
+                    "pt": "Começar a carregar com excedentes",
+                    "nl": "Begin met opladen met overschot",
+                    "fr": "Commencer à charger avec le surplus",
+                    "it": "Iniziare a caricare con le eccedenze",
+                    "es": "Empezar a cobrar con superávit",
+                    "pl": "Rozpocznij ładowanie z nadwyżką",
+                    "uk": "Почніть заряджати з надлишком",
+                    "zh-cn": "Start charging with surplus"
+                },
+                "type": "string",
+                "role": "text",
+                "def": "00:00:00",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.surplusStop",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Surplus Stop",
+                    "de": "Überschuss-Stop",
+                    "ru": "Остановка \"Излишки",
+                    "pt": "Paragem de excedentes",
+                    "nl": "Surplus Stop",
+                    "fr": "Arrêt de surplus",
+                    "it": "Stop alle eccedenze",
+                    "es": "Parada de excedentes",
+                    "pl": "Surplus Stop",
+                    "uk": "Надлишок Стоп",
+                    "zh-cn": "Surplus Stop"
+                },
+                "desc": {
+                    "en": "Stop charging with surplus",
+                    "de": "Nicht mehr mit Überschuss aufladen",
+                    "ru": "Прекратите заряжать излишки",
+                    "pt": "Deixar de carregar com excedentes",
+                    "nl": "Stop met het opladen van overschotten",
+                    "fr": "Cesser de charger les excédents",
+                    "it": "Smettere di caricare le eccedenze",
+                    "es": "Dejar de cobrar con excedentes",
+                    "pl": "Przestań ładować z nadwyżką",
+                    "uk": "Припиніть заряджати з надлишком",
+                    "zh-cn": "Stop charging with surplus"
+                },
+                "type": "string",
+                "role": "text",
+                "def": "00:00:00",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        }
+    ]
 }

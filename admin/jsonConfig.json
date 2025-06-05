@@ -11,27 +11,11 @@
          "label": "main_settings",
          "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xMiAxNS41QTMuNSAzLjUgMCAwIDEgOC41IDEyQTMuNSAzLjUgMCAwIDEgMTIgOC41YTMuNSAzLjUgMCAwIDEgMy41IDMuNWEzLjUgMy41IDAgMCAxLTMuNSAzLjVtNy40My0yLjUzYy4wNC0uMzIuMDctLjY0LjA3LS45N3MtLjAzLS42Ni0uMDctMWwyLjExLTEuNjNjLjE5LS4xNS4yNC0uNDIuMTItLjY0bC0yLTMuNDZjLS4xMi0uMjItLjM5LS4zMS0uNjEtLjIybC0yLjQ5IDFjLS41Mi0uMzktMS4wNi0uNzMtMS42OS0uOThsLS4zNy0yLjY1QS41MDYuNTA2IDAgMCAwIDE0IDJoLTRjLS4yNSAwLS40Ni4xOC0uNS40MmwtLjM3IDIuNjVjLS42My4yNS0xLjE3LjU5LTEuNjkuOThsLTIuNDktMWMtLjIyLS4wOS0uNDkgMC0uNjEuMjJsLTIgMy40NmMtLjEzLjIyLS4wNy40OS4xMi42NEw0LjU3IDExYy0uMDQuMzQtLjA3LjY3LS4wNyAxcy4wMy42NS4wNy45N2wtMi4xMSAxLjY2Yy0uMTkuMTUtLjI1LjQyLS4xMi42NGwyIDMuNDZjLjEyLjIyLjM5LjMuNjEuMjJsMi40OS0xLjAxYy41Mi40IDEuMDYuNzQgMS42OS45OWwuMzcgMi42NWMuMDQuMjQuMjUuNDIuNS40Mmg0Yy4yNSAwIC40Ni0uMTguNS0uNDJsLjM3LTIuNjVjLjYzLS4yNiAxLjE3LS41OSAxLjY5LS45OWwyLjQ5IDEuMDFjLjIyLjA4LjQ5IDAgLjYxLS4yMmwyLTMuNDZjLjEyLS4yMi4wNy0uNDktLjEyLS42NHoiLz48L3N2Zz4=",
          "items": {
-            "_header_surplus": {
+            "_header_main": {
                "type": "header",
                "size": 2,
                "text": "main_settings",
                "sm": 12
-            },
-            "resetFinished": {
-               "type": "checkbox",
-               "label": "main_resetFinished",
-               "xs": 12,
-               "sm": 12,
-               "md": 12,
-               "lg": 12,
-               "xl": 12,
-               "newLine": true,
-               "default": false
-            },
-            "_divider0": {
-               "newLine": true,
-               "type": "divider",
-               "color": "primary"
             },
             "_donate": {
                "type": "staticImage",
@@ -65,8 +49,17 @@
             "_header_surplus": {
                "type": "header",
                "size": 2,
-               "text": "subtitle_surplus",
+               "text": "title_surplus",
                "sm": 12
+            },
+            "_sub_surplus": {
+               "type": "staticText",
+               "text": "subtitle_surplus",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12
             },
             "surplus_id": {
                "type": "objectId",
@@ -90,8 +83,8 @@
                "xs": 12,
                "sm": 12,
                "md": 12,
-               "lg": 12,
-               "xl": 12,
+               "lg": 6,
+               "xl": 6,
                "newLine": true,
                "default": false
             },
@@ -101,8 +94,78 @@
                "xs": 12,
                "sm": 12,
                "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true,
+               "default": false
+            }
+         }
+      },
+      "_BatteryTab": {
+         "type": "panel",
+         "label": "title_battery",
+         "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KCTxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTE2IDIwSDhWNmg4bS42Ny0ySDE1VjJIOXYySDcuMzNDNi42IDQgNiA0LjYgNiA1LjMzdjE1LjM0QzYgMjEuNCA2LjYgMjIgNy4zMyAyMmg5LjM0Yy43NCAwIDEuMzMtLjU5IDEuMzMtMS4zM1Y1LjMzQzE4IDQuNiAxNy40IDQgMTYuNjcgNE0xNSAxNkg5djNoNnptMC05SDl2M2g2em0wIDQuNUg5djNoNnoiIC8+Cjwvc3ZnPg==",
+         "items": {
+            "_header_battery": {
+               "type": "header",
+               "size": 2,
+               "text": "title_battery",
+               "sm": 12
+            },
+            "_sub_battery": {
+               "type": "staticText",
+               "text": "subtitle_battery",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
                "lg": 12,
-               "xl": 12,
+               "xl": 12
+            },
+            "battery_id": {
+               "type": "objectId",
+               "label": "battery_id",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "battery_soc": {
+               "type": "objectId",
+               "label": "battery_soc",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "_header_battery_options": {
+               "type": "header",
+               "size": 2,
+               "text": "additional_settings",
+               "sm": 12
+            },
+            "battery_option": {
+               "type": "checkbox",
+               "label": "battery_option",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true,
+               "default": false
+            },
+            "battery_positive": {
+               "type": "checkbox",
+               "label": "battery_positive",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
                "newLine": true,
                "default": false
             }
@@ -116,48 +179,17 @@
             "_header_wallbox": {
                "type": "header",
                "size": 2,
-               "text": "subtitle_wallbox",
+               "text": "title_wallbox",
                "sm": 12
             },
-            "wallbox_connected": {
-               "type": "objectId",
-               "label": "wallbox_connected",
+            "_sub_wallbox": {
+               "type": "staticText",
+               "text": "subtitle_wallbox",
                "xs": 12,
                "sm": 12,
                "md": 12,
-               "lg": 6,
-               "xl": 6,
-               "newLine": true
-            },
-            "wallbox_start": {
-               "type": "objectId",
-               "label": "wallbox_start",
-               "xs": 12,
-               "sm": 12,
-               "md": 12,
-               "lg": 6,
-               "xl": 6,
-               "newLine": true
-            },
-            "wallbox_stop": {
-               "type": "objectId",
-               "label": "wallbox_stop",
-               "xs": 12,
-               "sm": 12,
-               "md": 12,
-               "lg": 6,
-               "xl": 6,
-               "newLine": true
-            },
-            "wallbox_power": {
-               "type": "objectId",
-               "label": "wallbox_power",
-               "xs": 12,
-               "sm": 12,
-               "md": 12,
-               "lg": 6,
-               "xl": 6,
-               "newLine": true
+               "lg": 12,
+               "xl": 12
             },
             "wallbox_ampere_min": {
                "type": "number",
@@ -182,65 +214,49 @@
                "lg": 6,
                "xl": 6,
                "newLine": true
-            }
-         }
-      },
-      "_CarTab": {
-         "type": "panel",
-         "label": "title_car",
-         "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xOC45MiAyYy0uMi0uNTgtLjc2LTEtMS40Mi0xaC0xMWMtLjY2IDAtMS4yMS40Mi0xLjQyIDFMMyA4djhjMCAuNTUuNDUgMSAxIDFoMWMuNTUgMCAxLS40NSAxLTF2LTFoMTJ2MWMwIC41NS40NSAxIDEgMWgxYy41NSAwIDEtLjQ1IDEtMVY4ek02LjUgMTJjLS44MyAwLTEuNS0uNjctMS41LTEuNVM1LjY3IDkgNi41IDlTOCA5LjY3IDggMTAuNVM3LjMzIDEyIDYuNSAxMm0xMSAwYy0uODMgMC0xLjUtLjY3LTEuNS0xLjVTMTYuNjcgOSAxNy41IDlzMS41LjY3IDEuNSAxLjVzLS42NyAxLjUtMS41IDEuNU01IDdsMS41LTQuNWgxMUwxOSA3em0yIDEzaDR2LTJsNiAzaC00djJ6Ii8+PC9zdmc+",
-         "items": {
-            "_header_car": {
-               "type": "header",
-               "size": 2,
-               "text": "subtitle_car",
-               "sm": 12
             },
-            "carList": {
-               "type": "table",
+            "ocpp_port": {
+               "type": "port",
+               "label": "ocpp_port",
+               "validator": "!!data.ocpp_port",
+               "validatorNoSaveOnError": true,
+               "min": 4,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "ex_wallbox_ocpp": {
+               "type": "staticText",
+               "text": "wallbox_ocpp_ex",
+               "style": {
+                  "color": "green",
+                  "fontSize": 14
+               },
                "xs": 12,
                "sm": 12,
                "md": 12,
                "lg": 12,
-               "xl": 12,
-               "label": "car_list",
-               "items": [
-                  {
-                     "type": "text",
-                     "title": "car_name",
-                     "attr": "name",
-                     "width": "20%",
-                     "default": "New Car"
-                  },
-                  {
-                     "type": "number",
-                     "title": "car_capacity",
-                     "attr": "capacity",
-                     "width": "20%",
-                     "default": ""
-                  },
-                  {
-                     "type": "objectId",
-                     "title": "car_soc",
-                     "attr": "soc",
-                     "width": "20%",
-                     "default": ""
-                  },
-                  {
-                     "type": "objectId",
-                     "title": "car_connected",
-                     "attr": "connected",
-                     "width": "20%",
-                     "default": ""
-                  },
-                  {
-                     "type": "objectId",
-                     "title": "car_update",
-                     "attr": "update",
-                     "width": "20%",
-                     "default": ""
-                  }
-               ]
+               "xl": 12
+            },
+            "_divider0": {
+               "newLine": true,
+               "type": "divider",
+               "color": "primary"
+            },
+            "resetFinished": {
+               "type": "checkbox",
+               "label": "main_resetFinished",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true,
+               "default": false
             }
          }
       },
@@ -252,8 +268,17 @@
             "_header_time": {
                "type": "header",
                "size": 2,
-               "text": "subtitle_time",
+               "text": "title_time",
                "sm": 12
+            },
+            "_sub_time": {
+               "type": "staticText",
+               "text": "subtitle_time",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12
             },
             "timeout_start": {
                "type": "number",
@@ -313,16 +338,84 @@
             }
          }
       },
+      "_AccountTab": {
+         "type": "panel",
+         "label": "title_account",
+         "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KCTxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTEyIDRhNCA0IDAgMCAxIDQgNGE0IDQgMCAwIDEtNCA0YTQgNCAwIDAgMS00LTRhNCA0IDAgMCAxIDQtNG0wIDJhMiAyIDAgMCAwLTIgMmEyIDIgMCAwIDAgMiAyYTIgMiAwIDAgMCAyLTJhMiAyIDAgMCAwLTItMm0wIDdjMi42NyAwIDggMS4zMyA4IDR2M0g0di0zYzAtMi42NyA1LjMzLTQgOC00bTAgMS45Yy0yLjk3IDAtNi4xIDEuNDYtNi4xIDIuMXYxLjFoMTIuMlYxN2MwLS42NC0zLjEzLTIuMS02LjEtMi4xIiAvPgo8L3N2Zz4=",
+         "items": {
+            "_header_notification": {
+               "type": "header",
+               "size": 2,
+               "text": "title_account",
+               "sm": 12
+            },
+            "_sub_notification": {
+               "type": "staticText",
+               "text": "subtitle_account",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12
+            },
+            "account_email": {
+               "type": "text",
+               "label": "account_email",
+               "min": 60,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "account_password": {
+               "type": "password",
+               "label": "account_password",
+               "visible": true,
+               "min": 60,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            },
+            "account_pin": {
+               "type": "password",
+               "label": "account_pin",
+               "min": 60,
+               "step": 1,
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
+               "newLine": true
+            }
+         }
+      },
       "_NotificationTab": {
          "type": "panel",
          "label": "title_notification",
          "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0yMSAxOXYxSDN2LTFsMi0ydi02YzAtMy4xIDIuMDMtNS44MyA1LTYuNzFWNGEyIDIgMCAwIDEgMi0yYTIgMiAwIDAgMSAyIDJ2LjI5YzIuOTcuODggNSAzLjYxIDUgNi43MXY2em0tNyAyYTIgMiAwIDAgMS0yIDJhMiAyIDAgMCAxLTItMm05Ljc1LTE3LjgxbC0xLjQyIDEuNDJBOC45OCA4Ljk4IDAgMCAxIDIxIDExaDJjMC0yLjkzLTEuMTYtNS43NS0zLjI1LTcuODFNMSAxMWgyYzAtMi40Ljk2LTQuNyAyLjY3LTYuMzlMNC4yNSAzLjE5QTEwLjk2IDEwLjk2IDAgMCAwIDEgMTEiLz48L3N2Zz4=",
          "items": {
-            "_header_time": {
+            "_header_notification": {
                "type": "header",
                "size": 2,
-               "text": "subtitle_notification",
+               "text": "title_notification",
                "sm": 12
+            },
+            "_sub_notification": {
+               "type": "staticText",
+               "text": "subtitle_notification",
+               "xs": 12,
+               "sm": 12,
+               "md": 12,
+               "lg": 12,
+               "xl": 12
             },
             "notificationEnable": {
                "type": "checkbox",
@@ -330,8 +423,8 @@
                "xs": 12,
                "sm": 12,
                "md": 12,
-               "lg": 12,
-               "xl": 12,
+               "lg": 6,
+               "xl": 6,
                "newLine": true,
                "default": false
             },
