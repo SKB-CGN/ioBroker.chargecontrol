@@ -588,7 +588,8 @@ class chargecontrol extends utils.Adapter {
 
                         // Activate Interval for requesting updates from the car every 10 minutes
                         this.log.info('Activating car-update interval every 10 minutes!');
-                        this.adapterIntervalTimer.car = setInterval(() => {
+                        // prettier-ignore
+                        this.adapterIntervalTimer.car = setInterval(async () => {
                             this.getVehicleStatus();
                         }, 10 * 60 * 1000);
 
@@ -643,6 +644,7 @@ class chargecontrol extends utils.Adapter {
                             );
 
                             // Wait to force-stop the Wallbox, if the car is still in suspended mode
+                            // prettier-ignore
                             this.adapterTimeouts.suspended = setTimeout(async () => {
                                 // Check again, if we stay in suspended mode
                                 if (currentStatus.status == 'SuspendedEV') {
@@ -694,9 +696,11 @@ class chargecontrol extends utils.Adapter {
 
                         // Activate Interval for requesting updates from the car every 10 minutes
                         this.log.info('Activating car-update interval every 10 minutes!');
+                        // prettier-ignore
                         this.adapterIntervalTimer.car = setInterval(() => {
                             this.getVehicleStatus();
                         }, 10 * 60 * 1000);
+                        break;
 
                     // Cases for the Wallbox not connected!
                     case 'Unavailable':
@@ -833,6 +837,7 @@ class chargecontrol extends utils.Adapter {
 
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
+     *
      * @param {() => void} callback
      */
 
@@ -858,8 +863,9 @@ class chargecontrol extends utils.Adapter {
 
     /**
      * Is called if a subscribed state changes
-     * @param {string} id
-     * @param {ioBroker.State | null | undefined} state
+     *
+     * @param id	ID of the state
+     * @param state State itself
      */
     async onStateChange(id, state) {
         if (id && state) {
@@ -934,13 +940,14 @@ class chargecontrol extends utils.Adapter {
     /**
      * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
      * Using this method requires "common.messagebox" property to be set to true in io-package.json
-     * @param {ioBroker.Message} obj
+     *
+     * @param obj Message Object
      */
     async onMessage(obj) {
         //this.log.debug(`[onMessage] received command: ${obj.command} with message: ${JSON.stringify(obj.message)}`);
         if (obj && obj.message) {
             if (typeof obj.message === 'object') {
-                this.log.info(obj.command + ': ' + JSON.stringify(obj.message));
+                this.log.info(`${obj.command}: ${JSON.stringify(obj.message)}`);
                 switch (obj.command) {
                     case 'getTelegramUserConfig':
                         if (obj && obj.message) {
@@ -964,7 +971,7 @@ class chargecontrol extends utils.Adapter {
                                                 });
                                             }
                                             this.sendTo(obj.from, obj.command, targets, obj.callback);
-                                            this.log.debug(obj.command + ': ' + JSON.stringify(targets));
+                                            this.log.debug(`${obj.command}: ${JSON.stringify(targets)}`);
                                         } else {
                                             this.sendTo(
                                                 obj.from,
@@ -1013,7 +1020,6 @@ class chargecontrol extends utils.Adapter {
      *
      * @throws {Error} If the server is not available or login credentials are wrong.
      * @throws {Error} If something went wrong with login.
-     *
      * @returns {Promise<void>}
      */
     async loginToHyundai() {
@@ -1030,7 +1036,7 @@ class chargecontrol extends utils.Adapter {
             this.blueLinkyClient = new BlueLinky(loginOptions);
 
             this.blueLinkyClient.on('ready', async vehicles => {
-                this.log.info(vehicles.length + ' Vehicles found');
+                this.log.info(`${vehicles.length} Vehicle(s) found!`);
                 this.vehicle.vin = vehicles[0].vehicleConfig.vin;
                 this.vehicle.vehicle = vehicles[0];
                 this.vehicle.connected = true;
@@ -1124,8 +1130,8 @@ class chargecontrol extends utils.Adapter {
     }
 
     async chargeHandler() {
-        this.log.info('[OCPP]: ' + JSON.stringify(this.ocppCharge));
-        this.log.info('[Charge]: ' + JSON.stringify(this.chargeDetails));
+        this.log.info(`[OCPP]: ${JSON.stringify(this.ocppCharge)}`);
+        this.log.info(`[Charge]: ${JSON.stringify(this.chargeDetails)}`);
         // If Wallbox is not connected and/or the car as well, not finished - not necessary to run it
         if (!this.ocppCharge.carConnected || !this.ocppCharge.client) {
             return;
@@ -1381,7 +1387,7 @@ class chargecontrol extends utils.Adapter {
      *
      * @param {string} key - The identifier for the interval to manage.
      * @param {number} timeoutInSec - The timeout duration in seconds.
-     * @returns {Object} An object containing a status boolean and, if not ready, the remaining wait time in seconds.
+     * @returns {object} An object containing a status boolean and, if not ready, the remaining wait time in seconds.
      */
 
     intervalHandler(key, timeoutInSec) {
@@ -1442,7 +1448,7 @@ class chargecontrol extends utils.Adapter {
      * @param {number} amps The new ampere value for the wallbox.
      * @param {boolean} user Whether the command was triggered by a user or not. If true, the command will be rejected if the timeout for sending the next command has not expired.
      * @param {number} retriesLeft The number of retries left. If the command fails, it will be retried up to this number of times. Defaults to 3.
-     * @returns {Promise<Object>} The response object from the wallbox.
+     * @returns {Promise<object>} The response object from the wallbox.
      */
     async setWallbox(amps, user = false, retriesLeft = 3) {
         const timeout = this.intervalHandler('power', this.settings.timeout.power);
@@ -1474,7 +1480,7 @@ class chargecontrol extends utils.Adapter {
     /**
      * @description Starts the Wallbox by sending a RemoteStartTransaction command.
      * First a minimum of 10 Ampere will be set and after 120 seconds the wallbox will be set to the correct values or into pause-mode if mode is Deactivated (0) or Surplus (2).
-     * @returns {Promise<Object>} The response object from the wallbox
+     * @returns {Promise<object>} The response object from the wallbox
      */
     async startWallbox() {
         if (this.adapterErrors.start <= 0 || this.chargeDetails.wallboxStarted) {
@@ -1485,7 +1491,7 @@ class chargecontrol extends utils.Adapter {
         await this.deleteChargingProfile();
 
         this.log.info(`[OCPP]: Sending start to Wallbox!`);
-        const setAmps = this.limitAmpere(Math.max(10, this.chargeDetails.requestAmp));
+        //const setAmps = this.limitAmpere(Math.max(10, this.chargeDetails.requestAmp));
 
         const response = await this.sendCommand('RemoteStartTransaction', {
             connectorId: DEFAULT_CONNECTOR_ID,
@@ -1554,7 +1560,7 @@ class chargecontrol extends utils.Adapter {
      *
      * @param {number} amps - The charging current in amperes.
      * @param {boolean} [defaultProfile=false] - If true, generates a default charging profile; otherwise, a transaction profile.
-     * @returns {Object} The charging profile object containing the connectorId, csChargingProfiles with details such as chargingProfileId, stackLevel, chargingProfilePurpose, chargingProfileKind, and chargingSchedule.
+     * @returns {object} The charging profile object containing the connectorId, csChargingProfiles with details such as chargingProfileId, stackLevel, chargingProfilePurpose, chargingProfileKind, and chargingSchedule.
      */
 
     generateChargeProfile(amps, defaultProfile = false) {
@@ -1588,7 +1594,7 @@ class chargecontrol extends utils.Adapter {
 
         try {
             const response = await this.connectedClient.call(command, payload);
-            this.log.info('Answer of the client: ' + JSON.stringify(response));
+            this.log.info(`Answer of the client: ${JSON.stringify(response)}`);
             return response;
         } catch (error) {
             this.log.warn(`[OCPP]: Command "${command}" failed! ${error}`);
@@ -1600,6 +1606,7 @@ class chargecontrol extends utils.Adapter {
 
     /**
      * Convert watt to ampere
+     *
      * @param {number} watt - Power in Watt
      * @returns {number} Ampere
      */
@@ -1608,6 +1615,7 @@ class chargecontrol extends utils.Adapter {
     }
     /**
      * Convert ampere to watt
+     *
      * @param {number} ampere - Current in Ampere
      * @returns {number} Watt
      */
@@ -1617,6 +1625,7 @@ class chargecontrol extends utils.Adapter {
 
     /**
      * Limits the given ampere value to be within the configured minimum and maximum values for the wallbox.
+     *
      * @param {number} ampere - The current in Ampere to be limited.
      * @returns {number} - The limited current value within the allowed range.
      */
@@ -1627,11 +1636,14 @@ class chargecontrol extends utils.Adapter {
 
     /**
      * Converts a given number of seconds into a string in the format HH:MM:SS
+     *
      * @param {number} seconds - The number of seconds to convert
      * @returns {string} - The converted time as a string in the format HH:MM:SS
      */
     secondsToHHMMSS(seconds) {
-        if (seconds == null) return; // check for null or undefined
+        if (seconds == null) {
+            return '00:00:00'; // check for null or undefined
+        }
         const date = new Date(0);
         date.setSeconds(seconds);
         return date.toISOString().slice(11, 19);
@@ -1641,7 +1653,7 @@ class chargecontrol extends utils.Adapter {
 if (require.main !== module) {
     // Export the constructor in compact mode
     /**
-     * @param {Partial<utils.AdapterOptions>} [options={}]
+     * @param options   Options for the module
      */
     module.exports = options => new chargecontrol(options);
 } else {
