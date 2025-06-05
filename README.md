@@ -19,7 +19,7 @@ This adapter allows you in a simple way, to use the PV surplus energy to charge 
 This adapter **is not** published into ioBroker as it runs on my private installation!
 If you want to use this adapter in your own installation, you need to change and/or update things *before* you can use it.
 
-Why is it on Github anyways?
+Why is it on Github anyways?  
 I am using the automated checking of repositories, to maintain my personal installation :-)
 
 ## Changelog

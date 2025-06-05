@@ -433,8 +433,9 @@
                "label": "notification_type",
                "xs": 12,
                "sm": 12,
-               "md": 8,
-               "lg": 4,
+               "md": 12,
+               "lg": 6,
+               "xl": 6,
                "options": [
                   {
                      "label": "E-Mail",
@@ -485,9 +486,9 @@
                "newLine": true,
                "xs": 12,
                "sm": 12,
-               "md": 6,
-               "lg": 4,
-               "xl": 4
+               "md": 12,
+               "lg": 6,
+               "xl": 6
             },
             "telegramInstance": {
                "hidden": "data.notificationsType !== 'Telegram'",
@@ -498,9 +499,9 @@
                "newLine": true,
                "xs": 12,
                "sm": 12,
-               "md": 6,
-               "lg": 4,
-               "xl": 4
+               "md": 12,
+               "lg": 6,
+               "xl": 6
             },
             "telegramRecipient": {
                "type": "selectSendTo",
@@ -513,9 +514,9 @@
                "newLine": true,
                "xs": 12,
                "sm": 12,
-               "md": 6,
-               "lg": 4,
-               "xl": 4
+               "md": 12,
+               "lg": 6,
+               "xl": 6
             }
          }
       }
